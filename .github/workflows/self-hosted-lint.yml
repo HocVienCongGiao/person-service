@@ -1,0 +1,33 @@
+name: Run Lint
+
+on:
+  push:
+    branches:
+      - experiment_test
+      
+jobs:
+  codestyle-lint-compile:
+    runs-on: peterbean
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cargo version
+        working-directory: person-lambda      
+        run: |
+          source $HOME/.cargo/env
+          cargo version
+      - name: Lambda Cargo fmt
+        working-directory: person-lambda
+        run: |
+          source $HOME/.cargo/env
+          cargo fmt --all -- --check
+          
+      - name: Lambda Cargo lint
+        working-directory: person-lambda
+        run: |
+          source $HOME/.cargo/env
+          cargo clippy --all-targets -- -D clippy::all
+      - name: Lambda Cargo check for compile
+        working-directory: person-lambda
+        run: |
+          source $HOME/.cargo/env
+          cargo check --all

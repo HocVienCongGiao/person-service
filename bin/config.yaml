@@ -1,0 +1,18 @@
+templateDir: ./bin/custom_templates
+additionalProperties:
+  artifactId: rust-server
+  serializableModel: "true"
+  dateLibrary: ruse
+files:
+  models.mustache:
+    templateType: API
+    destinationFilename: src/models.rs
+  lib.mustache:
+    templateType: API
+    destinationFilename: src/lib.rs
+  server-mod.mustache:
+    templateType: API
+    destinationFilename: src/server/mod.rs
+  client-mod.mustache:
+    templateType: API
+    destinationFilename: src/client/mod.rs

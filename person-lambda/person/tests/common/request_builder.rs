@@ -21,6 +21,6 @@ fn build_http_request(uri: String) -> Request {
         .uri(uri)
         .method("GET")
         .header("Content-Type", "application/json")
-        .body(Body::Text("Hello World".to_string()))
+        .body(Body::Empty)
         .unwrap()
 }

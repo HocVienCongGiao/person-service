@@ -1,0 +1,30 @@
+name: Run Lint
+
+on:
+  push:
+    branches-ignore:
+      - experiment_test
+      
+jobs:
+  codestyle-lint-compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Unpack
+        run: |
+          source $HOME/.cargo/env
+          mkdir -p ~/.peterbean
+          echo ${{ secrets.GH_PAT }} > ~/.peterbean/.gh_pat 
+          make unpack
+
+      - name: Cargo version
+        working-directory: person-lambda
+        run: |
+          source $HOME/.cargo/env
+          cargo version
+
+      - name: Lambda Cargo check for compile
+        working-directory: person-lambda
+        run: |
+          source $HOME/.cargo/env
+          cargo check --all

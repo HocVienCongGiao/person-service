@@ -1,1 +1,1 @@
-service_name = "student-service"
+service_name = "person-service"

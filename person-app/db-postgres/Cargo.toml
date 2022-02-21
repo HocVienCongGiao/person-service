@@ -1,0 +1,14 @@
+[package]
+name = "db-postgres"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio-postgres = { version = "0.7.2", features = ["with-uuid-0_8", "with-chrono-0_4", "with-time-0_2"] }
+tokio = { version = "1.6.0", features = ["full"] }
+domain = { path = "../domain" }
+uuid = { version = "0.8", features = ["v4"] }
+async-trait = "0.1.50"
+chrono = { version = "0.4", features = ["serde"] }

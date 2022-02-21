@@ -1,26 +1,47 @@
-use lambda_http::{http, Body, Context, IntoResponse, Request};
+use hvcg_biography_openapi_person::models::PersonUpsert;
+use lambda_http::http::Request;
+use lambda_http::{http, Body, Context, IntoResponse, RequestExt};
+use std::collections::HashMap;
 
-pub async fn build_http_request_hello_world() -> Option<String> {
+pub fn build_http_request_to_post_person_upsert(
+    given_person_upsert: PersonUpsert,
+) -> Request<Body> {
+    let query_param = HashMap::new();
+    let path_param = HashMap::new();
     let uri =
-        "https://dev-sg.portal.hocvienconggiao.com/query-api/person-service/persons".to_string();
-    let response = person::func(build_http_request(uri), Context::default())
-        .await
-        .expect("expected Ok(_) value")
-        .into_response();
+        "https://dev-sg.portal.hocvienconggiao.com/mutation-api/person-service/persons".to_string();
 
-    let mut response_data: Option<String> = None;
-    if let Body::Text(body) = response.body() {
-        // println!("{:?}", serde_json::from_str(body.as_str()));
-        response_data = Some(body.to_owned())
-    }
-    response_data
+    let serialized = serde_json::to_string(&given_person_upsert).unwrap();
+    build_http_post_request(uri, query_param, path_param, Some(serialized))
 }
 
-fn build_http_request(uri: String) -> Request {
-    http::Request::builder()
+fn build_http_post_request(
+    uri: String,
+    query_param: HashMap<String, Vec<String>>,
+    path_param: HashMap<String, Vec<String>>,
+    body: Option<String>,
+) -> Request<Body> {
+    build_http_request("POST".to_string(), uri, body, query_param, path_param)
+}
+
+fn build_http_request(
+    method: String,
+    uri: String,
+    body: Option<String>,
+    query_param: HashMap<String, Vec<String>>,
+    path_param: HashMap<String, Vec<String>>,
+) -> Request<Body> {
+    let mut request_body = Body::Empty;
+    if let Some(body) = body {
+        request_body = Body::from(body)
+    }
+    let request = http::Request::builder()
         .uri(uri)
-        .method("GET")
+        .method(method.as_str())
         .header("Content-Type", "application/json")
-        .body(Body::Empty)
+        .body(request_body)
         .unwrap()
+        .with_query_string_parameters(query_param)
+        .with_path_parameters(path_param);
+    request
 }

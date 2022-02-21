@@ -8,14 +8,13 @@ edition = "2021"
 [dependencies]
 lambda_http = "0.3.0"
 tokio = { version = "1", features = ["macros"] }
-#controller = { package = "controller", path = "../../student-app/controller" }
-#controller = { package = "mock-controller", path = "../../student-app/mock-controller" }
-#domain = {path = "../../student-app/domain"}
+controller = { package = "controller", path = "../../person-app/controller" }
+domain = {path = "../../person-app/domain"}
 
 jsonwebtoken = "7.2.0"
 serde = { version = "1.0", features = ["derive"] }
 uuid = "0.8"
-#hvcg_academics_openapi_person = { path = "../../person-openapi" }
+hvcg_biography_openapi_person = { path = "../../person-openapi" }
 serde_json = "1.0"
 chrono = "0.4.19"
 

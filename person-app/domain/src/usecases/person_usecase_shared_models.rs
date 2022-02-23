@@ -67,6 +67,7 @@ impl std::str::FromStr for PersonUsecaseSharedNationality {
     }
 }
 
+#[derive(Clone)]
 pub struct PersonUsecaseSharedIdNumber {
     pub id_number: Option<String>,
     pub code: Option<PersonUsecaseSharedIdNumberProvider>,

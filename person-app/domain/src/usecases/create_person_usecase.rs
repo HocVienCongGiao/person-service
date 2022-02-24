@@ -2,6 +2,7 @@ use crate::entities::person::{Nationality, Person as PersonEntity};
 use crate::entities::personal_id_number::{PersonIdNumberProvider, PersonalIdNumber};
 use crate::ports::person_db_gateway::PersonDbGateway;
 use crate::ports::person_dbresponse::Person as PersonDbResponse;
+use crate::ports::person_dbresponse::PersonalIdNumber as PersonalIdNumberDbResponse;
 use crate::usecases::person_usecase_shared_models::{
     PersonUsecaseSharedIdNumber, PersonUsecaseSharedIdNumberProvider,
     PersonUsecaseSharedNationality,
@@ -55,6 +56,7 @@ where
             return match usecase_output {
                 Ok(output) => {
                     println!("Create successfully");
+                    // let mut output = output.with_personal_id_numbers()
                     Ok(output)
                 }
                 Err(error) => {
@@ -93,11 +95,29 @@ pub struct CreatePersonUsecaseOutput {
     pub place_of_birth: Option<String>,
     pub email: Option<String>,
     pub phone: Option<String>,
+    pub personal_id_numbers: Option<Vec<PersonUsecaseSharedIdNumber>>,
     // TODO: add more
+}
+
+impl ToUsecaseOutput<PersonUsecaseSharedIdNumber> for PersonalIdNumberDbResponse {
+    fn to_usecase_output(self) -> PersonUsecaseSharedIdNumber {
+        PersonUsecaseSharedIdNumber {
+            id_number: self.id_number,
+            code: self.code.map(|code| code.parse().unwrap()),
+            date_of_issue: self.date_of_issue,
+            place_of_issue: self.place_of_issue,
+        }
+    }
 }
 
 impl ToUsecaseOutput<CreatePersonUsecaseOutput> for PersonDbResponse {
     fn to_usecase_output(self) -> CreatePersonUsecaseOutput {
+        let mut personal_id_numbers: Vec<PersonUsecaseSharedIdNumber> = Vec::new();
+        if let Some(personal_id_numbers_db_response) = self.personal_id_numbers {
+            for personal_id_number in personal_id_numbers_db_response {
+                personal_id_numbers.push(personal_id_number.to_usecase_output());
+            }
+        }
         CreatePersonUsecaseOutput {
             person_id: self.id,
             first_name: self.first_name.clone(),
@@ -107,6 +127,7 @@ impl ToUsecaseOutput<CreatePersonUsecaseOutput> for PersonDbResponse {
             place_of_birth: self.place_of_birth.clone(),
             email: self.email.clone(),
             phone: self.phone,
+            personal_id_numbers: Some(personal_id_numbers),
         }
     }
 }

@@ -6,12 +6,12 @@ use std::str::FromStr;
 use uuid::Uuid;
 
 pub fn prepare_person_view_openapi(person_uuid: Option<Uuid>) -> PersonView {
-    // let personal_id_numbers_openapi = vec![PersonalIdNumber {
-    //     id_number: Some("7465878765".to_string()),
-    //     id_number_provider: Some(IdNumberProvider::NATIONAL_ID),
-    //     date_of_issue: Some(NaiveDate::from_str("2000-04-03").unwrap()),
-    //     place_of_issue: Some("TP HCM".to_string()),
-    // }];
+    let personal_id_numbers_openapi = vec![PersonalIdNumber {
+        id_number: Some("7465878765".to_string()),
+        id_number_provider: Some(IdNumberProvider::NATIONAL_ID),
+        date_of_issue: Some(NaiveDate::from_str("2000-04-03").unwrap()),
+        place_of_issue: Some("TP HCM".to_string()),
+    }];
     PersonView {
         id: person_uuid
             .unwrap_or_else(|| Uuid::from_str("ccb45678-69bb-4b54-9f09-3c8ab3c30999").unwrap()),
@@ -20,7 +20,7 @@ pub fn prepare_person_view_openapi(person_uuid: Option<Uuid>) -> PersonView {
         place_of_birth: Some("Trà Vinh".to_string()),
         email: Some("binh@sunrise.vn".to_string()),
         phone: Some("+84 1228019700".to_string()),
-        personal_id_numbers: None,
+        personal_id_numbers: Some(personal_id_numbers_openapi),
     }
 }
 

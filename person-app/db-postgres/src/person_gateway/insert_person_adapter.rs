@@ -7,7 +7,7 @@ use tokio_postgres::{Error, Transaction};
 use uuid::Uuid;
 
 use domain::ports::insert_person_port::InsertPersonPort;
-use domain::ports::person_dbresponse::Person as PersonDbResponse;
+use domain::ports::person_dbresponse::{Person as PersonDbResponse, PersonalIdNumber};
 use domain::ports::person_mutation_dbrequest::Person as PersonMutationDbRequest;
 use domain::ports::DbError;
 
@@ -257,11 +257,13 @@ impl InsertPersonPort for PersonRepository {
             ));
         }
 
+        let mut personal_id_numbers: Vec<PersonalIdNumber> = Vec::new();
         for person_id_number in db_request.personal_id_number.unwrap() {
             // insert id for personal id number
             let id_number_id = person_id_number.id.unwrap();
             let id_number = person_id_number.id_number.unwrap();
-            result = save_personal_id_number(&transaction, id, id_number_id, id_number).await;
+            result =
+                save_personal_id_number(&transaction, id, id_number_id, id_number.clone()).await;
             if let Err(error) = result {
                 return Err(DbError::UnknownError(
                     error.into_source().unwrap().to_string(),
@@ -284,7 +286,7 @@ impl InsertPersonPort for PersonRepository {
                 id_number_id,
                 "place_of_issue".to_string(),
                 "place_of_issue".to_string(),
-                place_of_issue,
+                place_of_issue.clone(),
             )
             .await;
             if let Err(error) = result {
@@ -308,6 +310,13 @@ impl InsertPersonPort for PersonRepository {
                     error.into_source().unwrap().to_string(),
                 ));
             }
+            personal_id_numbers.push(PersonalIdNumber {
+                id: Some(id_number_id),
+                id_number: Some(id_number),
+                code: Some(id_number_provider),
+                date_of_issue: Some(date_of_issue),
+                place_of_issue: Some(place_of_issue),
+            })
         }
 
         transaction
@@ -323,7 +332,7 @@ impl InsertPersonPort for PersonRepository {
             place_of_birth: Some(place_of_birth.clone()),
             email: Some(email.clone()),
             phone: Some(phone.clone()),
-            personal_id_numbers: None,
+            personal_id_numbers: Some(personal_id_numbers),
         })
     }
 }

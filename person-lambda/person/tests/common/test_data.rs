@@ -7,14 +7,14 @@ use uuid::Uuid;
 
 pub fn prepare_person_view_openapi(person_uuid: Option<Uuid>) -> PersonView {
     let personal_id_numbers_openapi = vec![PersonalIdNumber {
-        id_number: Some("7465878765".to_string()),
+        id_number: Some("837837655558".to_string()),
         id_number_provider: Some(IdNumberProvider::NATIONAL_ID),
-        date_of_issue: Some(NaiveDate::from_str("2000-04-03").unwrap()),
-        place_of_issue: Some("TP HCM".to_string()),
+        date_of_issue: Some(NaiveDate::from_str("2011-05-05").unwrap()),
+        place_of_issue: Some("TP.HCM".to_string()),
     }];
     PersonView {
         id: person_uuid
-            .unwrap_or_else(|| Uuid::from_str("ccb45678-69bb-4b54-9f09-3c8ab3c30999").unwrap()),
+            .unwrap_or_else(|| Uuid::from_str("53f549b9-99bf-4e12-88e3-c2f868953283").unwrap()),
         name: Some("Nguyễn Hữu Chiến".to_string()),
         date_of_birth: Some(NaiveDate::from_str("1983-05-16").unwrap()),
         place_of_birth: Some("Trà Vinh".to_string()),

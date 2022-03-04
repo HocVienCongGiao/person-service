@@ -7,8 +7,9 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
 mod build_response;
-mod post_person;
+mod get_persons;
 mod parse_request;
+mod post_person;
 
 type Error = Box<dyn std::error::Error + Sync + Send + 'static>;
 
@@ -26,7 +27,7 @@ pub async fn func(request: Request, ctx: Context) -> Result<impl IntoResponse, E
     print_debug_log(&request);
 
     let response = match *request.method() {
-        method::Method::GET => build_response::default_response(request),
+        method::Method::GET => get_persons::execute(request).await,
         method::Method::POST => post_person::execute(request).await,
         _ => build_response::default_response(request),
     };

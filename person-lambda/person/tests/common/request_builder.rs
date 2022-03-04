@@ -3,6 +3,27 @@ use lambda_http::http::Request;
 use lambda_http::{http, Body, Context, IntoResponse, RequestExt};
 use std::collections::HashMap;
 
+pub fn build_http_request_to_get_one_person(uuid: String) -> Request<Body> {
+    let mut query_param = HashMap::new();
+    let mut path_param = HashMap::new();
+
+    let uri = format!(
+        "https://dev-sg.portal.hocvienconggiao.com/query-api/person-service/persons/{}",
+        uuid
+    );
+
+    path_param.insert("id".to_string(), vec![uuid]);
+    build_http_get_request(uri, query_param, path_param)
+}
+
+pub fn build_http_get_request(
+    uri: String,
+    query_param: HashMap<String, Vec<String>>,
+    path_param: HashMap<String, Vec<String>>,
+) -> Request<Body> {
+    build_http_request("GET".to_string(), uri, None, query_param, path_param)
+}
+
 pub fn build_http_request_to_post_person_upsert(
     given_person_upsert: PersonUpsert,
 ) -> Request<Body> {

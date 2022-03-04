@@ -1,11 +1,12 @@
 use crate::entities::person::Person;
+use crate::ports::find_one_person_by_id_port::FindOnePersonByIdPort;
 use crate::ports::insert_person_port::InsertPersonPort;
 use crate::ports::person_mutation_dbrequest::Person as PersonMutationDbRequest;
 use crate::ports::person_mutation_dbrequest::PersonalIdNumber;
 use async_trait::async_trait;
 
 #[async_trait]
-pub trait PersonDbGateway: InsertPersonPort {}
+pub trait PersonDbGateway: InsertPersonPort + FindOnePersonByIdPort {}
 
 impl Person {
     pub fn to_mutation_db_request(&self) -> PersonMutationDbRequest {

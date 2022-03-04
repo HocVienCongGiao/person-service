@@ -1,3 +1,4 @@
+use crate::ports::personal_id_number::models::personal_id_number_db_response::PersonalIdNumberDbResponse;
 use chrono::NaiveDate;
 use uuid::Uuid;
 
@@ -17,6 +18,10 @@ pub(crate) trait WithChristianName<T> {
 
 pub(crate) trait WithPersonId<T> {
     fn with_person_id(self, person_id: Option<Uuid>) -> T;
+}
+
+pub(crate) trait WithPersonalIdNumbers<T> {
+    fn with_personal_id_numbers(self, personal_id_numbers: Vec<PersonalIdNumberDbResponse>) -> T;
 }
 
 #[derive(PartialEq, Clone)]
@@ -187,17 +192,4 @@ impl std::str::FromStr for PersonUsecaseSharedEducationalLevel {
             _ => std::result::Result::Err(format!("Value not valid: {}", s)),
         }
     }
-}
-
-pub struct QueryPersonUsecaseOutput {
-    pub id: Uuid,
-    pub first_name: Option<String>,
-    pub middle_name: Option<String>,
-    pub last_name: Option<String>,
-    pub date_of_birth: Option<NaiveDate>,
-    pub place_of_birth: Option<String>,
-    pub email: Option<String>,
-    pub phone: Option<String>,
-    // todo()!
-    // pub personal_id_numbers: Option<Vec<>>,
 }

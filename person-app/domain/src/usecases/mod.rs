@@ -1,5 +1,7 @@
 pub mod create_person_usecase;
 pub mod person_usecase_shared_models;
+pub mod query_one_person_by_id_usecase;
+pub mod query_one_personal_id_number_usecase;
 
 pub(crate) trait ToEntity<T> {
     fn to_entity(self) -> T;

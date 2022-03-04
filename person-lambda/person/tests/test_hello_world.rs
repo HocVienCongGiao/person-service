@@ -1,5 +1,5 @@
-use crate::common::{poster, test_data};
-use hvcg_biography_openapi_person::models::PersonUpsert;
+use crate::common::{getter, poster, test_data};
+use hvcg_biography_openapi_person::models::{PersonUpsert, PersonView};
 use std::path::PathBuf;
 use std::sync::Once;
 use uuid::Uuid;
@@ -19,7 +19,24 @@ fn initialise() {
 #[tokio::test]
 async fn crud_should_work() {
     initialise();
+    given_a_student_when_get_one_by_id_then_return_correct_student_view_openapi().await;
     when_post_a_person_upsert_then_person_is_correctly_saved_and_person_view_returned().await;
+}
+
+async fn given_a_student_when_get_one_by_id_then_return_correct_student_view_openapi() {
+    // Given
+    let expected_person_view_openapi: PersonView =
+        test_data::prepare_person_view_openapi(None, None);
+    let given_uuid = expected_person_view_openapi.id.to_string();
+
+    // When
+    let actual_person_view_openapi = getter::get_one_person_by_id(given_uuid).await;
+
+    // Then
+    assert_eq!(
+        expected_person_view_openapi,
+        actual_person_view_openapi.unwrap()
+    );
 }
 
 async fn when_post_a_person_upsert_then_person_is_correctly_saved_and_person_view_returned() {
@@ -31,7 +48,8 @@ async fn when_post_a_person_upsert_then_person_is_correctly_saved_and_person_vie
 
     // Then
     let actual_id: Option<Uuid> = actual_person_view_openapi.clone().map(|t| t.id);
-    let expected_person_view_openapi = test_data::prepare_person_view_openapi(actual_id);
+    let expected_person_view_openapi =
+        test_data::prepare_person_view_openapi(actual_id, Some("837837655555".to_string()));
     assert_eq!(
         expected_person_view_openapi,
         actual_person_view_openapi.unwrap()

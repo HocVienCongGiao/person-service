@@ -2,7 +2,7 @@ use crate::entities::person::{Nationality, Person as PersonEntity};
 use crate::entities::personal_id_number::{PersonIdNumberProvider, PersonalIdNumber};
 use crate::ports::person_db_gateway::PersonDbGateway;
 use crate::ports::person_dbresponse::Person as PersonDbResponse;
-use crate::ports::person_dbresponse::PersonalIdNumber as PersonalIdNumberDbResponse;
+use crate::ports::personal_id_number::models::personal_id_number_db_response::PersonalIdNumberDbResponse;
 use crate::usecases::person_usecase_shared_models::{
     PersonUsecaseSharedIdNumber, PersonUsecaseSharedIdNumberProvider,
     PersonUsecaseSharedNationality,

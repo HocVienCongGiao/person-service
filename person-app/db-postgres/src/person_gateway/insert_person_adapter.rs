@@ -1,5 +1,3 @@
-use std::ops::Add;
-
 use async_trait::async_trait;
 use chrono::NaiveDate;
 use tokio_postgres::types::ToSql;
@@ -7,8 +5,9 @@ use tokio_postgres::{Error, Transaction};
 use uuid::Uuid;
 
 use domain::ports::insert_person_port::InsertPersonPort;
-use domain::ports::person_dbresponse::{Person as PersonDbResponse, PersonalIdNumber};
+use domain::ports::person_dbresponse::Person as PersonDbResponse;
 use domain::ports::person_mutation_dbrequest::Person as PersonMutationDbRequest;
+use domain::ports::personal_id_number::models::personal_id_number_db_response::PersonalIdNumberDbResponse;
 use domain::ports::DbError;
 
 use crate::person_gateway::repository::PersonRepository;
@@ -135,7 +134,7 @@ impl InsertPersonPort for PersonRepository {
 
         // insert id
         let id = db_request.id.unwrap();
-        result = save_id(&transaction, id).await;
+        result = save_id(&transaction, id.clone()).await;
         if let Err(error) = result {
             return Err(DbError::UnknownError(
                 error.into_source().unwrap().to_string(),
@@ -257,7 +256,7 @@ impl InsertPersonPort for PersonRepository {
             ));
         }
 
-        let mut personal_id_numbers: Vec<PersonalIdNumber> = Vec::new();
+        let mut personal_id_numbers: Vec<PersonalIdNumberDbResponse> = Vec::new();
         for person_id_number in db_request.personal_id_number.unwrap() {
             // insert id for personal id number
             let id_number_id = person_id_number.id.unwrap();
@@ -310,8 +309,9 @@ impl InsertPersonPort for PersonRepository {
                     error.into_source().unwrap().to_string(),
                 ));
             }
-            personal_id_numbers.push(PersonalIdNumber {
-                id: Some(id_number_id),
+            personal_id_numbers.push(PersonalIdNumberDbResponse {
+                id: id_number_id,
+                person_id: Some(id),
                 id_number: Some(id_number),
                 code: Some(id_number_provider),
                 date_of_issue: Some(date_of_issue),

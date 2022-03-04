@@ -26,10 +26,10 @@ pub fn prepare_person_view_openapi(person_uuid: Option<Uuid>) -> PersonView {
 
 pub fn prepare_person_upsert_openapi() -> PersonUpsert {
     let personal_id_numbers_openapi = vec![PersonalIdNumber {
-        id_number: Some("7465878765".to_string()),
+        id_number: Some("837837655558".to_string()),
         id_number_provider: Some(IdNumberProvider::NATIONAL_ID),
-        date_of_issue: Some(NaiveDate::from_str("2000-04-03").unwrap()),
-        place_of_issue: Some("TP HCM".to_string()),
+        date_of_issue: Some(NaiveDate::from_str("2011-05-05").unwrap()),
+        place_of_issue: Some("TP.HCM".to_string()),
     }];
     PersonUpsert {
         first_name: Some("Chiến".to_string()),

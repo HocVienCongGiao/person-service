@@ -19,9 +19,8 @@ fn initialise() {
 #[tokio::test]
 async fn crud_should_work() {
     initialise();
-    when_post_a_person_upsert_then_person_is_correctly_saved_and_person_view_returned().await;
     given_a_student_when_get_one_by_id_then_return_correct_student_view_openapi().await;
-
+    when_post_a_person_upsert_then_person_is_correctly_saved_and_person_view_returned().await;
 }
 
 async fn given_a_student_when_get_one_by_id_then_return_correct_student_view_openapi() {

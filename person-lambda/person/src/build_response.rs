@@ -56,6 +56,6 @@ pub fn default_response(request: Request) -> Response<Body> {
         .header(ACCESS_CONTROL_ALLOW_HEADERS, "*")
         .header(ACCESS_CONTROL_ALLOW_METHODS, "*")
         .status(200)
-        .body(Body::Text("Hello World".to_string()))
+        .body(Body::Empty)
         .unwrap()
 }

@@ -10,6 +10,7 @@ mod build_response;
 mod get_persons;
 mod parse_request;
 mod post_person;
+mod put_persons;
 
 type Error = Box<dyn std::error::Error + Sync + Send + 'static>;
 

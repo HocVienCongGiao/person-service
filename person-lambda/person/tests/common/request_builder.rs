@@ -52,46 +52,9 @@ fn build_http_request(
     query_param: HashMap<String, Vec<String>>,
     path_param: HashMap<String, Vec<String>>,
 ) -> Request<Body> {
-    let test = "{
-    'lastName': 'Nguyen',
-    'saintName': 'Giuse',
-    'dateOfBirth': {},
-    'placeOfBirth': 'Tra Vinh',
-    'email': 'binh@sunrise.vn',
-    'phone': '+84 1228019700',
-    'address': '1000 CMT8 p5 q.Tân Bình, TP.HCM',
-    'nationality': 'Vietnamese',
-    'race': 'Kinh',
-    'personalIdNumbers': [
-    {
-        'idNumber': '99005014079',
-        'idNumberProvider': 'NATIONAL_ID',
-        'dateOfIssue': '2022-03-05',
-        'placeOfIssue': 'string'
-    }
-    ],
-    'language': 'Vietnamse',
-    'completedProgram': 'University',
-    'position': {
-        'pastor': {
-            'diocese': 'Xuan loc',
-            'order': 'Da minh'
-        },
-        'seminarian': {
-            'diocese': 'Xuan loc',
-            'order': 'Da minh'
-        },
-        'monk': 'Khấn trọn',
-        'parishioner': {
-            'diocese': 'Xuan loc',
-            'parish': 'Doc mo'
-        }
-    },
-    'program': 'Cử Nhân'
-}".to_string();
     let mut request_body = Body::Empty;
     if let Some(body) = body {
-        request_body = Body::from(test)
+        request_body = Body::from(body)
     }
     let request = http::Request::builder()
         .uri(uri)

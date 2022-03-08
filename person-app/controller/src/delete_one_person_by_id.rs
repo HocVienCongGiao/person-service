@@ -14,6 +14,6 @@ pub async fn from_uuid(id: Uuid) -> Result<(), UsecaseError> {
         client: personal_id_number_client,
     };
 
-    let delete_one_person_usecase_output = DeleteOnePersonByIdUsecaseInteractor::new(person_repository, personal_id_number_repository).execute(id).await;
+    let delete_one_person_usecase_output = DeleteOnePersonByIdUsecaseInteractor::new(person_repository).execute(id).await;
     Ok(())
 }

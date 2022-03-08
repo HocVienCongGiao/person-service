@@ -1,9 +1,7 @@
 use crate::build_response;
 use crate::parse_request::from_request_to_id;
-use domain::usecases::UsecaseError;
 use lambda_http::http::StatusCode;
 use lambda_http::{Body, Request, RequestExt, Response};
-use uuid::Uuid;
 
 pub async fn execute(request: Request) -> Response<Body> {
     println!("Handle delete method");
@@ -15,7 +13,7 @@ pub async fn execute(request: Request) -> Response<Body> {
         }
         _ => {
             status_code = StatusCode::NOT_FOUND;
-            // UsecaseError::ResourceNotFound
+            // TODO: UsecaseError::ResourceNotFound
             Ok(())
         }
     };

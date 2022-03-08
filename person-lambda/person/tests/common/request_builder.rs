@@ -66,3 +66,24 @@ fn build_http_request(
         .with_path_parameters(path_param);
     request
 }
+
+pub(crate) fn build_http_request_to_delete_one_person(uuid: String) -> Request<Body> {
+    let mut query_param = HashMap::new();
+    let mut path_param = HashMap::new();
+
+    let uri = format!(
+        "https://dev-sg.portal.hocvienconggiao.com/mutation-api/person-service/persons/{}",
+        uuid
+    );
+
+    path_param.insert("id".to_string(), vec![uuid]);
+    build_http_delete_request(uri, query_param, path_param)
+}
+
+fn build_http_delete_request(
+    uri: String,
+    query_param: HashMap<String, Vec<String>>,
+    path_param: HashMap<String, Vec<String>>,
+) -> Request<Body> {
+    build_http_request("DELETE".to_string(), uri, None, query_param, path_param)
+}

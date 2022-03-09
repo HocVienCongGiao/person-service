@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
 mod build_response;
+mod delete_person;
 mod get_persons;
 mod parse_request;
 mod post_person;
@@ -30,6 +31,7 @@ pub async fn func(request: Request, ctx: Context) -> Result<impl IntoResponse, E
     let response = match *request.method() {
         method::Method::GET => get_persons::execute(request).await,
         method::Method::POST => post_person::execute(request).await,
+        method::Method::DELETE => delete_person::execute(request).await,
         _ => build_response::default_response(request),
     };
     Ok(response)

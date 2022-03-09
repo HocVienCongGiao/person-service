@@ -14,7 +14,7 @@ pub(crate) struct Person {
     pub phone: Option<String>,
     pub nationality: Option<Nationality>,
     pub race: Option<String>,
-    pub personal_id_number: Option<Vec<PersonalIdNumber>>,
+    pub personal_id_numbers: Option<Vec<PersonalIdNumber>>,
     pub address: Option<String>,
 }
 

@@ -27,4 +27,6 @@ pub async fn create_person(
 
 pub async fn update_person_by_id(
     person_request: PersonUpsertOpenApi
-) -> Result<PersonViewOpenApi, UsecaseError> {update_person_by_id::from_openapi(person_request).await}
+) -> Result<PersonViewOpenApi, UsecaseError> {
+    update_person_by_id::from_openapi(person_request).await
+}

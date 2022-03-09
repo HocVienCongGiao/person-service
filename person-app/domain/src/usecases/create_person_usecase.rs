@@ -182,7 +182,7 @@ impl ToEntity<PersonEntity> for CreatePersonUsecaseInput {
             nationality,
             race: self.race,
             address: self.address,
-            personal_id_number: Some(personal_id_numbers),
+            personal_id_numbers: Some(personal_id_numbers),
         }
     }
 }

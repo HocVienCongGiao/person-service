@@ -8,6 +8,7 @@ use crate::ports::personal_id_number::personal_id_number_db_gateway::PersonalIdN
 use crate::usecases::person_usecase_shared_models::{PersonUsecaseSharedIdNumber, PersonUsecaseSharedNationality};
 use crate::usecases::{ToEntity, ToUsecaseOutput, UsecaseError};
 use crate::ports::person_dbresponse::Person as PersonDbResponse;
+
 pub struct UpdatePersonUsecaseInteractor<A: PersonDbGateway, B: PersonalIdNumberGateway> {
     person_db_gateway: A,
     personal_id_number_db_gateway: B,
@@ -102,19 +103,19 @@ impl ToEntity<PersonEntity> for UpdatePersonUsecaseInput {
     fn to_entity(self) -> PersonEntity {
         let mut nationality: Option<Nationality> = None;
         if let Some(nationality_usecase_input) = self.nationality {
-            nationality = Some(nationality.to_entity())
+            nationality = Some(nationality_usecase_input.to_entity())
         }
 
         let mut personal_id_numbers: Vec<PersonalIdNumber> = Vec::new();
         if let Some(personal_id_numbers_request) = self.personal_id_number {
             for pin in personal_id_numbers_request {
-                personal_id_numbers.push(PersonalIdNumber{
+                personal_id_numbers.push(PersonalIdNumber {
                     id: None,
                     id_number: pin.id_number,
                     // code: pin.code, TODO: refactor
                     code: None,
                     date_of_issue: pin.date_of_issue,
-                    place_of_issue: pin.place_of_issue
+                    place_of_issue: pin.place_of_issue,
                 })
             }
         }
@@ -130,7 +131,7 @@ impl ToEntity<PersonEntity> for UpdatePersonUsecaseInput {
             nationality,
             race: None,
             personal_id_numbers: None,
-            address: self.address
+            address: self.address,
         }
     }
 }
@@ -149,7 +150,19 @@ impl ToUsecaseOutput<UpdatePersonUsecaseOutput> for PersonDbResponse {
             address: None,
             nationality: None,
             race: None,
-            personal_id_number: None
+            personal_id_number: None,
+        }
+    }
+}
+
+impl ToEntity<Nationality> for PersonUsecaseSharedNationality {
+    fn to_entity(self) -> Nationality {
+        match self {
+            PersonUsecaseSharedNationality::Vietnamese => Nationality::Vietnamese,
+            PersonUsecaseSharedNationality::Chinese => Nationality::Chinese,
+            PersonUsecaseSharedNationality::American => Nationality::American,
+            PersonUsecaseSharedNationality::French => Nationality::French,
+            PersonUsecaseSharedNationality::British => Nationality::British,
         }
     }
 }

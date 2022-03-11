@@ -29,6 +29,7 @@ impl<A, B> UpdatePersonUsecaseInteractor<A, B>
 pub trait UpdatePersonUsecase {
     async fn execute(
         &mut self,
+        person_id: Uuid,
         request: UpdatePersonUsecaseInput,
     ) -> Result<UpdatePersonUsecaseOutput, UsecaseError>;
 }
@@ -39,13 +40,23 @@ impl<A, B> UpdatePersonUsecase for UpdatePersonUsecaseInteractor<A, B>
         A: PersonDbGateway + Sync + Send,
         B: PersonalIdNumberGateway + Sync + Send
 {
-    async fn execute(&mut self, request: UpdatePersonUsecaseInput) -> Result<UpdatePersonUsecaseOutput, UsecaseError> {
+    async fn execute(&mut self, person_id: Uuid, request: UpdatePersonUsecaseInput) -> Result<UpdatePersonUsecaseOutput, UsecaseError> {
         let person = request.to_entity();
         if person.is_valid() {
             println!("This person is valid");
+
+            let person_db_response = (*self)
+                .person_db_gateway
+                .find_one_by_id(person_id)
+                .await;
+
+            if person_db_response.is_none() {
+                return Err(UsecaseError::ResourceNotFound);
+            }
+
             let usecase_output: Result<UpdatePersonUsecaseOutput, UsecaseError> = (*self)
                 .person_db_gateway
-                .insert(person.to_mutation_db_request())
+                .update_one_by_id(person_id, person.to_mutation_db_request())
                 .await
                 .map(|response| response.to_usecase_output())
                 .map_err(|err| err.to_usecase_error());
@@ -69,7 +80,6 @@ impl<A, B> UpdatePersonUsecase for UpdatePersonUsecaseInteractor<A, B>
 }
 
 pub struct UpdatePersonUsecaseInput {
-    pub person_id: Option<Uuid>,
     pub first_name: Option<String>,
     pub middle_name: Option<String>,
     pub last_name: Option<String>,
@@ -120,7 +130,7 @@ impl ToEntity<PersonEntity> for UpdatePersonUsecaseInput {
             }
         }
         PersonEntity {
-            id: self.person_id,
+            id: None,
             first_name: self.first_name,
             middle_name: self.middle_name,
             last_name: self.last_name,
@@ -129,7 +139,7 @@ impl ToEntity<PersonEntity> for UpdatePersonUsecaseInput {
             email: self.email,
             phone: self.phone,
             nationality,
-            race: None,
+            race: self.race,
             personal_id_numbers: None,
             address: self.address,
         }
@@ -151,18 +161,6 @@ impl ToUsecaseOutput<UpdatePersonUsecaseOutput> for PersonDbResponse {
             nationality: None,
             race: None,
             personal_id_number: None,
-        }
-    }
-}
-
-impl ToEntity<Nationality> for PersonUsecaseSharedNationality {
-    fn to_entity(self) -> Nationality {
-        match self {
-            PersonUsecaseSharedNationality::Vietnamese => Nationality::Vietnamese,
-            PersonUsecaseSharedNationality::Chinese => Nationality::Chinese,
-            PersonUsecaseSharedNationality::American => Nationality::American,
-            PersonUsecaseSharedNationality::French => Nationality::French,
-            PersonUsecaseSharedNationality::British => Nationality::British,
         }
     }
 }

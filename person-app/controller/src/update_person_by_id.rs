@@ -1,22 +1,25 @@
 use hvcg_biography_openapi_person::models::Nationality;
+use uuid::Uuid;
 use db_postgres::person_gateway::repository::PersonRepository;
+use db_postgres::personal_id_number_gateway::repository::PersonalIdNumberRepository;
 use domain::usecases::person_usecase_shared_models::PersonUsecaseSharedNationality;
 use domain::usecases::update_one_person_by_id_usecase::{UpdatePersonUsecase, UpdatePersonUsecaseInput, UpdatePersonUsecaseInteractor};
 use domain::usecases::UsecaseError;
 use crate::{PersonUpsertOpenApi, PersonViewOpenApi};
 use crate::openapi::ToUsecaseInput;
+use crate::openapi::ToOpenApi;
 
-pub async fn from_openapi(person: PersonUpsertOpenApi) -> Result<PersonViewOpenApi, UsecaseError> {
+pub async fn from_openapi(person_id: Uuid, person: PersonUpsertOpenApi) -> Result<PersonViewOpenApi, UsecaseError> {
     // Init dependencies
     let client = db_postgres::connect().await;
     let person_repository = PersonRepository { client };
-    // Init dependencies
+
     let personal_id_number_client = db_postgres::connect().await;
-    let personal_id_number_repository = PersonRepository { client: personal_id_number_client };
+    let personal_id_number_repository = PersonalIdNumberRepository { client: personal_id_number_client };
 
     // Inject dependencies to Interactor and invoke func
     let result = UpdatePersonUsecaseInteractor::new(person_repository, personal_id_number_repository)
-        .execute(person.to_usecase_input())
+        .execute(person_id, person.to_usecase_input())
         .await;
     result.map(|res| res.to_openapi())
 }
@@ -35,7 +38,6 @@ impl ToUsecaseInput<UpdatePersonUsecaseInput> for PersonUpsertOpenApi {
             })
         }
         UpdatePersonUsecaseInput {
-            person_id: None,
             first_name: self.first_name.clone(),
             middle_name: self.middle_name.clone(),
             last_name: self.last_name.clone(),

@@ -5,6 +5,7 @@ use domain::usecases::person_usecase_shared_models::{
 };
 use domain::usecases::query_one_personal_id_number_usecase::PersonalIdNumberUsecaseOutput;
 use domain::usecases::query_one_personal_id_number_usecase::QueryPersonUsecaseOutput;
+use domain::usecases::update_one_person_by_id_usecase::UpdatePersonUsecaseOutput;
 use hvcg_biography_openapi_person::models::{IdNumberProvider, PersonView, PersonalIdNumber};
 use std::str::FromStr;
 
@@ -88,6 +89,25 @@ impl ToOpenApi<PersonView> for QueryPersonUsecaseOutput {
                 self.last_name.unwrap(),
             )),
             personal_id_numbers: Some(personal_id_numbers),
+        }
+    }
+}
+
+impl ToOpenApi<PersonView> for UpdatePersonUsecaseOutput {
+    fn to_openapi(self) -> PersonView {
+        PersonView {
+            id: self.person_id.unwrap(),
+            name: Some(format!(
+                "{} {} {}",
+                self.first_name.unwrap(),
+                self.middle_name.unwrap(),
+                self.last_name.unwrap(),
+            )),
+            date_of_birth: self.date_of_birth,
+            place_of_birth: self.place_of_birth,
+            email: self.email,
+            phone: self.phone,
+            personal_id_numbers: None,
         }
     }
 }

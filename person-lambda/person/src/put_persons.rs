@@ -1,8 +1,9 @@
 use crate::build_response;
+use domain::usecases::UsecaseError;
 use hvcg_biography_openapi_person::models::PersonUpsert;
 use lambda_http::http::StatusCode;
 use lambda_http::{Body, Request, RequestExt, Response};
-use domain::usecases::UsecaseError;
+use uuid::Uuid;
 
 pub async fn execute(request: Request) -> Response<Body> {
     println!("Handle put method");
@@ -22,9 +23,9 @@ pub async fn execute(request: Request) -> Response<Body> {
     build_response::execute(200, None, None)
 }
 
-async fn put_request(value: PersonUpsert) -> Response<Body> {
+async fn put_request(person_id: Uuid, value: PersonUpsert) -> Response<Body> {
     let lambda_person_request = value;
-    let result = controller::update_person_by_id(lambda_person_request).await;
+    let result = controller::update_person_by_id(person_id, lambda_person_request).await;
     let mut status_code;
     match result {
         Ok(_) => status_code = 200,

@@ -10,7 +10,7 @@ pub fn prepare_person_view_openapi(
     personal_id_number: Option<String>,
 ) -> PersonView {
     let personal_id_numbers_openapi = vec![PersonalIdNumber {
-        id_number: Some(personal_id_number.unwrap_or_else(|| "837837655558".to_string())),
+        id_number: Some(personal_id_number.unwrap_or_else(|| "837837655555".to_string())),
         id_number_provider: Some(IdNumberProvider::NATIONAL_ID),
         date_of_issue: Some(NaiveDate::from_str("2011-05-05").unwrap()),
         place_of_issue: Some("TP.HCM".to_string()),

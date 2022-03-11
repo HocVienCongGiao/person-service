@@ -1,13 +1,15 @@
+use crate::entities::person::{Nationality, Person as PersonEntity};
+use crate::entities::personal_id_number::PersonalIdNumber;
 use crate::ports::person_db_gateway::PersonDbGateway;
+use crate::ports::person_dbresponse::Person as PersonDbResponse;
+use crate::ports::personal_id_number::personal_id_number_db_gateway::PersonalIdNumberGateway;
+use crate::usecases::person_usecase_shared_models::{
+    PersonUsecaseSharedIdNumber, PersonUsecaseSharedNationality,
+};
+use crate::usecases::{ToEntity, ToUsecaseOutput, UsecaseError};
 use async_trait::async_trait;
 use chrono::NaiveDate;
 use uuid::Uuid;
-use crate::entities::person::{Nationality, Person as PersonEntity};
-use crate::entities::personal_id_number::PersonalIdNumber;
-use crate::ports::personal_id_number::personal_id_number_db_gateway::PersonalIdNumberGateway;
-use crate::usecases::person_usecase_shared_models::{PersonUsecaseSharedIdNumber, PersonUsecaseSharedNationality};
-use crate::usecases::{ToEntity, ToUsecaseOutput, UsecaseError};
-use crate::ports::person_dbresponse::Person as PersonDbResponse;
 
 pub struct UpdatePersonUsecaseInteractor<A: PersonDbGateway, B: PersonalIdNumberGateway> {
     person_db_gateway: A,
@@ -15,14 +17,16 @@ pub struct UpdatePersonUsecaseInteractor<A: PersonDbGateway, B: PersonalIdNumber
 }
 
 impl<A, B> UpdatePersonUsecaseInteractor<A, B>
-    where
-        A: PersonDbGateway + Sync + Send,
-        B: PersonalIdNumberGateway + Sync + Send
+where
+    A: PersonDbGateway + Sync + Send,
+    B: PersonalIdNumberGateway + Sync + Send,
 {
-    pub fn new(
-        person_db_gateway: A,
-        personal_id_number_db_gateway: B,
-    ) -> Self { UpdatePersonUsecaseInteractor { person_db_gateway, personal_id_number_db_gateway } }
+    pub fn new(person_db_gateway: A, personal_id_number_db_gateway: B) -> Self {
+        UpdatePersonUsecaseInteractor {
+            person_db_gateway,
+            personal_id_number_db_gateway,
+        }
+    }
 }
 
 #[async_trait]
@@ -36,19 +40,20 @@ pub trait UpdatePersonUsecase {
 
 #[async_trait]
 impl<A, B> UpdatePersonUsecase for UpdatePersonUsecaseInteractor<A, B>
-    where
-        A: PersonDbGateway + Sync + Send,
-        B: PersonalIdNumberGateway + Sync + Send
+where
+    A: PersonDbGateway + Sync + Send,
+    B: PersonalIdNumberGateway + Sync + Send,
 {
-    async fn execute(&mut self, person_id: Uuid, request: UpdatePersonUsecaseInput) -> Result<UpdatePersonUsecaseOutput, UsecaseError> {
+    async fn execute(
+        &mut self,
+        person_id: Uuid,
+        request: UpdatePersonUsecaseInput,
+    ) -> Result<UpdatePersonUsecaseOutput, UsecaseError> {
         let person = request.to_entity();
         if person.is_valid() {
             println!("This person is valid");
 
-            let person_db_response = (*self)
-                .person_db_gateway
-                .find_one_by_id(person_id)
-                .await;
+            let person_db_response = (*self).person_db_gateway.find_one_by_id(person_id).await;
 
             if person_db_response.is_none() {
                 return Err(UsecaseError::ResourceNotFound);
@@ -56,19 +61,19 @@ impl<A, B> UpdatePersonUsecase for UpdatePersonUsecaseInteractor<A, B>
 
             let usecase_output: Result<UpdatePersonUsecaseOutput, UsecaseError> = (*self)
                 .person_db_gateway
-                .update_one_by_id(person_id, person.to_mutation_db_request())
+                .update_one_by_id(person.to_mutation_db_request())
                 .await
                 .map(|response| response.to_usecase_output())
                 .map_err(|err| err.to_usecase_error());
 
             return match usecase_output {
                 Ok(output) => {
-                    println!("Create successfully");
+                    println!("Update successfully");
                     // let mut output = output.with_personal_id_numbers()
                     Ok(output)
                 }
                 Err(error) => {
-                    println!("Create fail");
+                    println!("Update fail");
                     Err(error)
                 }
             };

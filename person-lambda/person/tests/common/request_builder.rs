@@ -87,3 +87,32 @@ fn build_http_delete_request(
 ) -> Request<Body> {
     build_http_request("DELETE".to_string(), uri, None, query_param, path_param)
 }
+
+
+pub fn build_http_request_to_put_person(
+    person_upsert: PersonUpsert,
+    uuid: String,
+) -> Request<Body> {
+    let mut query_param = HashMap::new();
+    let mut path_param = HashMap::new();
+
+    let uri = format!(
+        "https://dev-sg.portal.hocvienconggiao.com/mutation-api/person-service/persons/{}",
+        uuid
+    );
+
+    path_param.insert("id".to_string(), vec![uuid]);
+    let serialized = serde_json::to_string(&person_upsert).unwrap();
+
+    build_http_put_request(uri, query_param, path_param, Some(serialized))
+}
+
+
+fn build_http_put_request(
+    uri: String,
+    query_param: HashMap<String, Vec<String>>,
+    path_param: HashMap<String, Vec<String>>,
+    body: Option<String>,
+) -> Request<Body> {
+    build_http_request("PUT".to_string(), uri, body, query_param, path_param)
+}

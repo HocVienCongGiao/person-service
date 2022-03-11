@@ -124,7 +124,7 @@ impl InsertPersonPort for PersonRepository {
         &mut self,
         db_request: PersonMutationDbRequest,
     ) -> Result<PersonDbResponse, DbError> {
-        let mut result: Result<u64, Error>;
+        let mut result: Result<u64, Error> = Ok(1_u64);
 
         let transaction = (*self)
             .client

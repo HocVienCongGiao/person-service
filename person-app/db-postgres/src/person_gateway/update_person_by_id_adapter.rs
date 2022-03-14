@@ -1,36 +1,52 @@
+use crate::person_gateway::repository::PersonRepository;
 use async_trait::async_trait;
 use chrono::NaiveDate;
-use tokio_postgres::types::ToSql;
-use tokio_postgres::{Error, Transaction};
-use uuid::Uuid;
-
-use domain::ports::insert_person_port::InsertPersonPort;
+use domain::ports::person::update_person_by_id_port::UpdateOnePersonByIdPort;
 use domain::ports::person_dbresponse::Person as PersonDbResponse;
 use domain::ports::person_mutation_dbrequest::Person as PersonMutationDbRequest;
 use domain::ports::personal_id_number::models::personal_id_number_db_response::PersonalIdNumberDbResponse;
 use domain::ports::DbError;
+use tokio_postgres::types::ToSql;
+use tokio_postgres::{Error, Transaction};
+use uuid::Uuid;
 
-use crate::person_gateway::repository::PersonRepository;
-
-pub(crate) async fn save_id(transaction: &Transaction<'_>, id: Uuid) -> Result<u64, Error> {
+async fn delete_personal_id_numbers_by_person_id(
+    transaction: &Transaction<'_>,
+    person_id: Uuid,
+) -> Result<u64, Error> {
     let stmt = (*transaction)
-        .prepare("INSERT into public.person__person (id) VAlUES ($1)")
+        .prepare("DELETE FROM public.person__person_id_number WHERE person_id = $1")
         .await
         .unwrap();
 
-    let params: &[&(dyn ToSql + Sync)] = &[&id];
+    let params: &[&(dyn ToSql + Sync)] = &[&person_id];
     transaction.execute(&stmt, params).await
 }
 
-pub(crate) async fn save_person_info(
+pub(crate) async fn update_date_of_birth(
     transaction: &Transaction<'_>,
     id: Uuid,
+    date_of_birth: NaiveDate,
+) -> Result<u64, Error> {
+    let stmt = (*transaction)
+        .prepare("UPDATE public.person__person_date_of_birth SET date_of_birth = $2 WHERE id = $1")
+        .await
+        .unwrap();
+
+    let params: &[&(dyn ToSql + Sync)] = &[&id, &date_of_birth];
+    transaction.execute(&stmt, params).await
+}
+
+pub(crate) async fn update_person_info(
+    transaction: &Transaction<'_>,
+    id: Uuid,
+    entity_name: String,
     field_name: String,
     value: String,
 ) -> Result<u64, Error> {
     let statement = format!(
-        "INSERT into public.person__person_{} (id, {}) VAlUES ($1, $2)",
-        field_name, field_name
+        "UPDATE public.person__{}_{} SET {} = $2 WHERE id = $1",
+        entity_name, field_name, field_name
     );
     let stmt = (*transaction).prepare(&statement).await.unwrap();
 
@@ -38,6 +54,24 @@ pub(crate) async fn save_person_info(
     transaction.execute(&stmt, params).await
 }
 
+pub(crate) async fn update_personal_id_number_info(
+    transaction: &Transaction<'_>,
+    personal_id_number_id: Uuid,
+    table_name: String,
+    field_name: String,
+    value: String,
+) -> Result<u64, Error> {
+    let statement = format!(
+        "UPDATE public.person__person_id_number_{} (id, {}) VAlUES ($1, $2)",
+        table_name, field_name
+    );
+    let stmt = (*transaction).prepare(&statement).await.unwrap();
+
+    let params: &[&(dyn ToSql + Sync)] = &[&personal_id_number_id, &value];
+    transaction.execute(&stmt, params).await
+}
+
+// add personal_id_number id to mutation db request to update
 pub(crate) async fn save_personal_id_number(
     transaction: &Transaction<'_>,
     person_id: Uuid,
@@ -52,38 +86,6 @@ pub(crate) async fn save_personal_id_number(
         .unwrap();
 
     let params: &[&(dyn ToSql + Sync)] = &[&personal_id_number_id, &person_id, &personal_id_number];
-    transaction.execute(&stmt, params).await
-}
-
-pub(crate) async fn save_date_of_birth(
-    transaction: &Transaction<'_>,
-    id: Uuid,
-    date_of_birth: NaiveDate,
-) -> Result<u64, Error> {
-    let stmt = (*transaction)
-        .prepare(
-            "INSERT into public.person__person_date_of_birth (id, date_of_birth) VAlUES ($1, $2)",
-        )
-        .await
-        .unwrap();
-
-    let params: &[&(dyn ToSql + Sync)] = &[&id, &date_of_birth];
-    transaction.execute(&stmt, params).await
-}
-
-pub(crate) async fn save_date_of_issue(
-    transaction: &Transaction<'_>,
-    personal_id_number_id: Uuid,
-    date_of_issue: NaiveDate,
-) -> Result<u64, Error> {
-    let stmt = (*transaction)
-        .prepare(
-            "INSERT INTO public.person__person_id_number_date_of_issue (id, date_of_issue) VAlUES ($1, $2)",
-        )
-        .await
-        .unwrap();
-
-    let params: &[&(dyn ToSql + Sync)] = &[&personal_id_number_id, &date_of_issue];
     transaction.execute(&stmt, params).await
 }
 
@@ -104,23 +106,25 @@ pub(crate) async fn save_personal_id_number_info(
     transaction.execute(&stmt, params).await
 }
 
-pub(crate) async fn save_polity(
+pub(crate) async fn save_date_of_issue(
     transaction: &Transaction<'_>,
-    person_id: Uuid,
-    polity_id: Uuid,
+    personal_id_number_id: Uuid,
+    date_of_issue: NaiveDate,
 ) -> Result<u64, Error> {
     let stmt = (*transaction)
-        .prepare("INSERT into public.person__person_polity (id, polity_id) VAlUES ($1, $2)")
+        .prepare(
+            "INSERT INTO public.person__person_id_number_date_of_issue (id, date_of_issue) VAlUES ($1, $2)",
+        )
         .await
         .unwrap();
 
-    let params: &[&(dyn ToSql + Sync)] = &[&person_id, &polity_id];
+    let params: &[&(dyn ToSql + Sync)] = &[&personal_id_number_id, &date_of_issue];
     transaction.execute(&stmt, params).await
 }
 
 #[async_trait]
-impl InsertPersonPort for PersonRepository {
-    async fn insert(
+impl UpdateOnePersonByIdPort for PersonRepository {
+    async fn update_one_by_id(
         &mut self,
         db_request: PersonMutationDbRequest,
     ) -> Result<PersonDbResponse, DbError> {
@@ -132,20 +136,14 @@ impl InsertPersonPort for PersonRepository {
             .await
             .map_err(|error| DbError::UnknownError(error.into_source().unwrap().to_string()))?;
 
-        // insert id
-        let id = db_request.id.unwrap();
-        result = save_id(&transaction, id.clone()).await;
-        if let Err(error) = result {
-            return Err(DbError::UnknownError(
-                error.into_source().unwrap().to_string(),
-            ));
-        }
+        let person_id = db_request.id.unwrap();
 
-        // insert first name
+        // update first name
         let first_name = db_request.first_name.unwrap();
-        result = save_person_info(
+        result = update_person_info(
             &transaction,
-            id,
+            person_id,
+            "person".to_string(),
             "first_name".to_string(),
             first_name.clone(),
         )
@@ -156,21 +154,28 @@ impl InsertPersonPort for PersonRepository {
             ));
         }
 
-        // insert last name
+        // update last name
         let last_name = db_request.last_name.unwrap();
-        result =
-            save_person_info(&transaction, id, "last_name".to_string(), last_name.clone()).await;
+        result = update_person_info(
+            &transaction,
+            person_id,
+            "person".to_string(),
+            "last_name".to_string(),
+            last_name.clone(),
+        )
+        .await;
         if let Err(error) = result {
             return Err(DbError::UnknownError(
                 error.into_source().unwrap().to_string(),
             ));
         }
 
-        // insert middle name
+        // update middle name
         let middle_name = db_request.middle_name.unwrap();
-        result = save_person_info(
+        result = update_person_info(
             &transaction,
-            id,
+            person_id,
+            "person".to_string(),
             "middle_name".to_string(),
             middle_name.clone(),
         )
@@ -181,47 +186,53 @@ impl InsertPersonPort for PersonRepository {
             ));
         }
 
-        // insert address
-        let address = db_request.address.unwrap();
-        result = save_person_info(&transaction, id, "address".to_string(), address.clone()).await;
-        if let Err(error) = result {
-            return Err(DbError::UnknownError(
-                error.into_source().unwrap().to_string(),
-            ));
-        }
-
-        // insert date of birth
+        // update date of birth
         let date_of_birth = db_request.date_of_birth.unwrap();
-        result = save_date_of_birth(&transaction, id, date_of_birth).await;
+        result = update_date_of_birth(&transaction, person_id, date_of_birth).await;
         if let Err(error) = result {
             return Err(DbError::UnknownError(
                 error.into_source().unwrap().to_string(),
             ));
         }
 
-        // insert email
+        // update email
         let email = db_request.email.unwrap();
-        result = save_person_info(&transaction, id, "email".to_string(), email.clone()).await;
-        if let Err(error) = result {
-            return Err(DbError::UnknownError(
-                error.into_source().unwrap().to_string(),
-            ));
-        }
-
-        // insert phone
-        let phone = db_request.phone.unwrap();
-        result = save_person_info(&transaction, id, "phone".to_string(), phone.clone()).await;
-        if let Err(error) = result {
-            return Err(DbError::UnknownError(
-                error.into_source().unwrap().to_string(),
-            ));
-        }
-
-        // insert place of birth
-        let place_of_birth = db_request.place_of_birth.unwrap();
-        result = save_person_info(
+        result = update_person_info(
             &transaction,
-            id,
+            person_id,
+            "person".to_string(),
+            "email".to_string(),
+            email.clone(),
+        )
+        .await;
+        if let Err(error) = result {
+            return Err(DbError::UnknownError(
+                error.into_source().unwrap().to_string(),
+            ));
+        }
+
+        // update phone
+        let phone = db_request.phone.unwrap();
+        result = update_person_info(
+            &transaction,
+            person_id,
+            "person".to_string(),
+            "phone".to_string(),
+            phone.clone(),
+        )
+        .await;
+        if let Err(error) = result {
+            return Err(DbError::UnknownError(
+                error.into_source().unwrap().to_string(),
+            ));
+        }
+
+        // update place of birth
+        let place_of_birth = db_request.place_of_birth.unwrap();
+        result = update_person_info(
+            &transaction,
+            person_id,
+            "person".to_string(),
             "place_of_birth".to_string(),
             place_of_birth.clone(),
         )
@@ -232,24 +243,7 @@ impl InsertPersonPort for PersonRepository {
             ));
         }
 
-        // insert nationality
-        let nationality = db_request.nationality.unwrap();
-        result = save_person_info(
-            &transaction,
-            id,
-            "nationality".to_string(),
-            nationality.clone(),
-        )
-        .await;
-        if let Err(error) = result {
-            return Err(DbError::UnknownError(
-                error.into_source().unwrap().to_string(),
-            ));
-        }
-
-        // insert race
-        let race = db_request.race.unwrap();
-        result = save_person_info(&transaction, id, "race".to_string(), race.clone()).await;
+        result = delete_personal_id_numbers_by_person_id(&transaction, person_id).await;
         if let Err(error) = result {
             return Err(DbError::UnknownError(
                 error.into_source().unwrap().to_string(),
@@ -262,7 +256,8 @@ impl InsertPersonPort for PersonRepository {
             let id_number_id = person_id_number.id.unwrap();
             let id_number = person_id_number.id_number.unwrap();
             result =
-                save_personal_id_number(&transaction, id, id_number_id, id_number.clone()).await;
+                save_personal_id_number(&transaction, person_id, id_number_id, id_number.clone())
+                    .await;
             if let Err(error) = result {
                 return Err(DbError::UnknownError(
                     error.into_source().unwrap().to_string(),
@@ -311,7 +306,7 @@ impl InsertPersonPort for PersonRepository {
             }
             personal_id_numbers.push(PersonalIdNumberDbResponse {
                 id: id_number_id,
-                person_id: Some(id),
+                person_id: Some(person_id),
                 id_number: Some(id_number),
                 code: Some(id_number_provider),
                 date_of_issue: Some(date_of_issue),
@@ -322,17 +317,17 @@ impl InsertPersonPort for PersonRepository {
         transaction
             .commit()
             .await
-            .map_err(|error| DbError::UnknownError(error.into_source().unwrap().to_string()));
-        Ok(PersonDbResponse {
-            id,
-            first_name: Some(first_name.clone()),
-            middle_name: Some(middle_name.clone()),
-            last_name: Some(last_name.clone()),
-            date_of_birth: Some(date_of_birth),
-            place_of_birth: Some(place_of_birth.clone()),
-            email: Some(email.clone()),
-            phone: Some(phone.clone()),
-            personal_id_numbers: Some(personal_id_numbers),
-        })
+            .map(|_| PersonDbResponse {
+                id: person_id,
+                first_name: Some(first_name.clone()),
+                middle_name: Some(middle_name.clone()),
+                last_name: Some(last_name.clone()),
+                date_of_birth: Some(date_of_birth),
+                place_of_birth: Some(place_of_birth.clone()),
+                email: Some(email.clone()),
+                phone: Some(phone.clone()),
+                personal_id_numbers: Some(personal_id_numbers),
+            })
+            .map_err(|error| DbError::UnknownError(error.into_source().unwrap().to_string()))
     }
 }

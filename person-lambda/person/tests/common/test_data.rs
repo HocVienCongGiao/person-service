@@ -29,7 +29,7 @@ pub fn prepare_person_view_openapi(
 
 pub fn prepare_person_upsert_openapi() -> PersonUpsert {
     let personal_id_numbers_openapi = vec![PersonalIdNumber {
-        id_number: Some("837837655555".to_string()),
+        id_number: Some("837837655558".to_string()),
         id_number_provider: Some(IdNumberProvider::NATIONAL_ID),
         date_of_issue: Some(NaiveDate::from_str("2011-05-05").unwrap()),
         place_of_issue: Some("TP.HCM".to_string()),

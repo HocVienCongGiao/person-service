@@ -1,6 +1,6 @@
+use crate::ports::DbError;
 use async_trait::async_trait;
 use uuid::Uuid;
-use crate::ports::DbError;
 
 #[async_trait]
 pub trait DeleteOnePersonByIdPort {

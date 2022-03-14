@@ -1,11 +1,13 @@
 use crate::build_response;
+use crate::parse_request::from_request_to_id;
 use domain::usecases::UsecaseError;
 use hvcg_biography_openapi_person::models::PersonUpsert;
 use lambda_http::http::StatusCode;
 use lambda_http::{Body, Request, RequestExt, Response};
+use uuid::Uuid;
 
 pub async fn execute(request: Request) -> Response<Body> {
-    println!("Handle post method.");
+    println!("Handle put method");
     let payload: Option<PersonUpsert> = match request.payload() {
         Ok(Some(body)) => body,
         Err(e) => {
@@ -19,20 +21,21 @@ pub async fn execute(request: Request) -> Response<Body> {
     if payload.is_none() {
         return build_response::execute(400, None, None);
     }
-    // Create person
-    return post_request(payload.unwrap()).await;
+    if let Some(id) = from_request_to_id(&request) {
+        return put_request(id, payload.unwrap()).await;
+    }
+    build_response::execute(405, None, None)
 }
 
-async fn post_request(value: PersonUpsert) -> Response<Body> {
+async fn put_request(person_id: Uuid, value: PersonUpsert) -> Response<Body> {
     let lambda_person_request = value;
-    let result = controller::create_person(lambda_person_request).await;
-    let mut status_code;
-    match result {
-        Ok(_) => status_code = 200,
-        Err(UsecaseError::UniqueConstraintViolationError(..)) => status_code = 503,
-        Err(UsecaseError::InvalidInput) => status_code = 405,
-        _ => status_code = 500,
-    }
+    let result = controller::update_person_by_id(person_id, lambda_person_request).await;
+    let status_code= match result {
+        Ok(_) => 200,
+        Err(UsecaseError::UniqueConstraintViolationError(..)) => 503,
+        Err(UsecaseError::InvalidInput) => 405,
+        _ => 500,
+    };
 
     let person_response = result.map(Some).unwrap_or_else(|e| {
         println!("error: {:?}", e);

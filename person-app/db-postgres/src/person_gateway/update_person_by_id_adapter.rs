@@ -9,6 +9,8 @@ use domain::ports::DbError;
 use tokio_postgres::types::ToSql;
 use tokio_postgres::{Error, Transaction};
 use uuid::Uuid;
+use domain::ports::personal_id_number::models::personal_id_number_db_response::PersonalIdNumberDbResponse;
+use domain::ports::personal_id_number::models::personal_id_number_db_response::PersonalIdNumberDbResponse;
 
 async fn delete_personal_id_numbers_by_person_id(
     transaction: &Transaction<'_>,

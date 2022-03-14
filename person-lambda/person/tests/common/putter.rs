@@ -1,5 +1,5 @@
-use hvcg_biography_openapi_person::models::{PersonUpsert, PersonView};
 use crate::common::request_builder;
+use hvcg_biography_openapi_person::models::{PersonUpsert, PersonView};
 use lambda_http::{http, Body, Context, IntoResponse, RequestExt, Response};
 
 pub async fn put_person(person_upsert: PersonUpsert, uuid: String) -> Option<PersonView> {

@@ -31,7 +31,6 @@ impl ToOpenApi<PersonalIdNumber> for PersonUsecaseSharedIdNumber {
 
 impl ToOpenApi<PersonalIdNumber> for PersonalIdNumberUsecaseOutput {
     fn to_openapi(self) -> PersonalIdNumber {
-        println!("test {:?}", self.id_number);
         PersonalIdNumber {
             id_number: self.id_number,
             id_number_provider: self.code.as_ref().map(|provider| {
@@ -84,9 +83,9 @@ impl ToOpenApi<PersonView> for QueryPersonUsecaseOutput {
             phone: self.phone,
             name: Some(format!(
                 "{} {} {}",
-                self.first_name.unwrap(),
-                self.middle_name.unwrap(),
                 self.last_name.unwrap(),
+                self.middle_name.unwrap(),
+                self.first_name.unwrap(),
             )),
             personal_id_numbers: Some(personal_id_numbers),
         }
@@ -95,19 +94,25 @@ impl ToOpenApi<PersonView> for QueryPersonUsecaseOutput {
 
 impl ToOpenApi<PersonView> for UpdatePersonUsecaseOutput {
     fn to_openapi(self) -> PersonView {
+        let mut personal_id_numbers: Vec<PersonalIdNumber> = Vec::new();
+        if let Some(personal_id_numbers_usecase_output) = self.personal_id_numbers {
+            for personal_id_number in personal_id_numbers_usecase_output {
+                personal_id_numbers.push(personal_id_number.to_openapi())
+            }
+        }
         PersonView {
             id: self.person_id.unwrap(),
             name: Some(format!(
                 "{} {} {}",
-                self.first_name.unwrap(),
-                self.middle_name.unwrap(),
                 self.last_name.unwrap(),
+                self.middle_name.unwrap(),
+                self.first_name.unwrap(),
             )),
             date_of_birth: self.date_of_birth,
             place_of_birth: self.place_of_birth,
             email: self.email,
             phone: self.phone,
-            personal_id_numbers: None,
+            personal_id_numbers: Some(personal_id_numbers),
         }
     }
 }

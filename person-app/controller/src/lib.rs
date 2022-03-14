@@ -5,9 +5,9 @@ use hvcg_biography_openapi_person::models::{
 use uuid::Uuid;
 
 mod create_person;
+mod delete_one_person_by_id;
 mod get_one_person_by_id;
 pub mod openapi;
-mod delete_one_person_by_id;
 mod update_person_by_id;
 
 pub async fn get_one_person_by_id(id: Uuid) -> Option<PersonViewOpenApi> {
@@ -24,10 +24,9 @@ pub async fn create_person(
     create_person::from_openapi(person_request).await
 }
 
-
 pub async fn update_person_by_id(
     person_id: Uuid,
-    person_request: PersonUpsertOpenApi
+    person_request: PersonUpsertOpenApi,
 ) -> Result<PersonViewOpenApi, UsecaseError> {
     update_person_by_id::from_openapi(person_id, person_request).await
 }

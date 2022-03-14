@@ -11,8 +11,9 @@ use domain::usecases::person_usecase_shared_models::{
     PersonUsecaseSharedNationality,
 };
 use domain::usecases::UsecaseError;
-use hvcg_biography_openapi_person::models::{IdNumberProvider, Nationality, PersonUpsert as PersonUpsertOpenApi, PersonView};
-use domain::usecases::update_one_person_by_id_usecase::UpdatePersonUsecaseOutput;
+use hvcg_biography_openapi_person::models::{
+    IdNumberProvider, Nationality, PersonUpsert as PersonUpsertOpenApi,
+};
 
 pub async fn from_openapi(person: PersonUpsertOpenApi) -> Result<PersonViewOpenApi, UsecaseError> {
     // Init dependencies

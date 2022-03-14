@@ -56,6 +56,7 @@ where
             let person_db_response = (*self).person_db_gateway.find_one_by_id(person_id).await;
 
             if person_db_response.is_none() {
+                println!("Person ID not found");
                 return Err(UsecaseError::ResourceNotFound);
             }
 
@@ -85,6 +86,7 @@ where
 }
 
 pub struct UpdatePersonUsecaseInput {
+    pub person_id: Option<Uuid>,
     pub first_name: Option<String>,
     pub middle_name: Option<String>,
     pub last_name: Option<String>,
@@ -111,7 +113,7 @@ pub struct UpdatePersonUsecaseOutput {
     pub address: Option<String>,
     pub nationality: Option<PersonUsecaseSharedNationality>,
     pub race: Option<String>,
-    pub personal_id_number: Option<Vec<PersonUsecaseSharedIdNumber>>,
+    pub personal_id_numbers: Option<Vec<PersonUsecaseSharedIdNumber>>,
 }
 
 impl ToEntity<PersonEntity> for UpdatePersonUsecaseInput {
@@ -125,17 +127,16 @@ impl ToEntity<PersonEntity> for UpdatePersonUsecaseInput {
         if let Some(personal_id_numbers_request) = self.personal_id_number {
             for pin in personal_id_numbers_request {
                 personal_id_numbers.push(PersonalIdNumber {
-                    id: None,
+                    id: Some(Uuid::new_v4()),
                     id_number: pin.id_number,
-                    // code: pin.code, TODO: refactor
-                    code: None,
+                    code: Some(pin.code.unwrap().to_entity()),
                     date_of_issue: pin.date_of_issue,
                     place_of_issue: pin.place_of_issue,
                 })
             }
         }
         PersonEntity {
-            id: None,
+            id: self.person_id,
             first_name: self.first_name,
             middle_name: self.middle_name,
             last_name: self.last_name,
@@ -145,7 +146,7 @@ impl ToEntity<PersonEntity> for UpdatePersonUsecaseInput {
             phone: self.phone,
             nationality,
             race: self.race,
-            personal_id_numbers: None,
+            personal_id_numbers: Some(personal_id_numbers),
             address: self.address,
         }
     }
@@ -153,6 +154,12 @@ impl ToEntity<PersonEntity> for UpdatePersonUsecaseInput {
 
 impl ToUsecaseOutput<UpdatePersonUsecaseOutput> for PersonDbResponse {
     fn to_usecase_output(self) -> UpdatePersonUsecaseOutput {
+        let mut personal_id_numbers: Vec<PersonUsecaseSharedIdNumber> = Vec::new();
+        if let Some(personal_id_numbers_db_response) = self.personal_id_numbers {
+            for personal_id_number in personal_id_numbers_db_response {
+                personal_id_numbers.push(personal_id_number.to_usecase_output());
+            }
+        }
         UpdatePersonUsecaseOutput {
             person_id: Some(self.id),
             first_name: self.first_name.clone(),
@@ -165,7 +172,14 @@ impl ToUsecaseOutput<UpdatePersonUsecaseOutput> for PersonDbResponse {
             address: None,
             nationality: None,
             race: None,
-            personal_id_number: None,
+            personal_id_numbers: Some(personal_id_numbers),
         }
+    }
+}
+
+impl UpdatePersonUsecaseInput {
+    pub fn with_person_id(mut self, id: Uuid) -> UpdatePersonUsecaseInput {
+        self.person_id = Some(id);
+        self
     }
 }

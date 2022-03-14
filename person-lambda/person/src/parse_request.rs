@@ -1,7 +1,6 @@
 use crate::Error;
 use chrono::NaiveDate;
 use domain::usecases::UsecaseError;
-use jsonwebtoken::TokenData;
 use lambda_http::http::header::{
     ACCESS_CONTROL_ALLOW_HEADERS, ACCESS_CONTROL_ALLOW_METHODS, ACCESS_CONTROL_ALLOW_ORIGIN,
     CONTENT_TYPE,

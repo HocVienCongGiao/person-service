@@ -11,7 +11,7 @@ mod delete_person;
 mod get_persons;
 mod parse_request;
 mod post_person;
-mod put_persons;
+mod put_person;
 
 type Error = Box<dyn std::error::Error + Sync + Send + 'static>;
 
@@ -31,6 +31,7 @@ pub async fn func(request: Request, ctx: Context) -> Result<impl IntoResponse, E
     let response = match *request.method() {
         method::Method::GET => get_persons::execute(request).await,
         method::Method::POST => post_person::execute(request).await,
+        method::Method::PUT => put_person::execute(request).await,
         method::Method::DELETE => delete_person::execute(request).await,
         _ => build_response::default_response(request),
     };

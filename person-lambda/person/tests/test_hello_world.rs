@@ -30,7 +30,8 @@ async fn update_a_person_by_id_and_person_view_returned() {
     // Given
     let given_person_upsert_openapi: PersonUpsert = test_data::prepare_person_upsert_openapi();
 
-    let expected_person_view_openapi: PersonView = test_data::prepare_person_view_openapi(None, None);
+    let expected_person_view_openapi: PersonView =
+        test_data::prepare_person_view_openapi(None, None);
     let given_uuid = expected_person_view_openapi.id.to_string();
 
     // When

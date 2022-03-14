@@ -1,17 +1,20 @@
 use crate::build_response;
 use domain::usecases::UsecaseError;
 use hvcg_biography_openapi_person::models::PersonUpsert;
-use lambda_http::{Body, Request, RequestExt, Response};
 use lambda_http::http::StatusCode;
+use lambda_http::{Body, Request, RequestExt, Response};
 
 pub async fn execute(request: Request) -> Response<Body> {
     println!("Handle post method.");
     let payload: Option<PersonUpsert> = match request.payload() {
         Ok(Some(body)) => body,
-        Err(e)=> {
-            return Response::builder().status(StatusCode::BAD_REQUEST).body(e.to_string().into()).expect("Invalid payload")
+        Err(e) => {
+            return Response::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .body(e.to_string().into())
+                .expect("Invalid payload")
         }
-        _ => None
+        _ => None,
     };
     if payload.is_none() {
         return build_response::execute(400, None, None);

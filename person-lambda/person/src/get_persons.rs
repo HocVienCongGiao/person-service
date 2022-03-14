@@ -1,17 +1,11 @@
 use crate::build_response;
 use crate::parse_request::from_request_to_id;
-use domain::usecases::UsecaseError;
-use jsonwebtoken::TokenData;
 use lambda_http::http::header::{
     ACCESS_CONTROL_ALLOW_HEADERS, ACCESS_CONTROL_ALLOW_METHODS, ACCESS_CONTROL_ALLOW_ORIGIN,
     CONTENT_TYPE,
 };
-use lambda_http::http::{method, uri::Uri, HeaderValue};
-use lambda_http::{handler, Body, Context, IntoResponse, Request, RequestExt, Response};
-use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
-use std::env;
-use std::str::FromStr;
+use lambda_http::http::HeaderValue;
+use lambda_http::{Body, Request, RequestExt, Response};
 use uuid::Uuid;
 
 pub async fn execute(request: Request) -> Response<Body> {

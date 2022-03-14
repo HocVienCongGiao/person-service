@@ -88,7 +88,6 @@ fn build_http_delete_request(
     build_http_request("DELETE".to_string(), uri, None, query_param, path_param)
 }
 
-
 pub fn build_http_request_to_put_person(
     person_upsert: PersonUpsert,
     uuid: String,
@@ -106,7 +105,6 @@ pub fn build_http_request_to_put_person(
 
     build_http_put_request(uri, query_param, path_param, Some(serialized))
 }
-
 
 fn build_http_put_request(
     uri: String,

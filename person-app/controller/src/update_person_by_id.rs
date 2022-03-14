@@ -24,10 +24,13 @@ pub async fn from_openapi(
         client: personal_id_number_client,
     };
 
+    let mut usecase_input: UpdatePersonUsecaseInput = person.to_usecase_input();
+    usecase_input = usecase_input.with_person_id(person_id);
+
     // Inject dependencies to Interactor and invoke func
     let result =
         UpdatePersonUsecaseInteractor::new(person_repository, personal_id_number_repository)
-            .execute(person_id, person.to_usecase_input())
+            .execute(person_id, usecase_input)
             .await;
     result.map(|res| res.to_openapi())
 }
@@ -46,6 +49,7 @@ impl ToUsecaseInput<UpdatePersonUsecaseInput> for PersonUpsertOpenApi {
             })
         }
         UpdatePersonUsecaseInput {
+            person_id: None, // update later
             first_name: self.first_name.clone(),
             middle_name: self.middle_name.clone(),
             last_name: self.last_name.clone(),

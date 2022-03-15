@@ -3,6 +3,17 @@ use lambda_http::http::Request;
 use lambda_http::{http, Body, Context, IntoResponse, RequestExt};
 use std::collections::HashMap;
 
+pub fn build_http_request_to_get_person_collection(offset: i32, count: i32) -> Request<Body> {
+    let mut query_param = HashMap::new();
+    query_param.insert("count".to_string(), vec![count.to_string()]);
+    query_param.insert("offset".to_string(), vec![offset.to_string()]);
+    let mut path_param = HashMap::new();
+
+    let uri =
+        "https://dev-sg.portal.hocvienconggiao.com/query-api/person-service/persons".to_string();
+    build_http_get_request(uri, query_param, path_param)
+}
+
 pub fn build_http_request_to_get_one_person(uuid: String) -> Request<Body> {
     let mut query_param = HashMap::new();
     let mut path_param = HashMap::new();

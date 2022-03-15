@@ -28,3 +28,5 @@ pub fn from_request_to_id(req: &Request) -> Option<uuid::Uuid> {
         None
     }
 }
+
+pub fn from_request_to_collection_query

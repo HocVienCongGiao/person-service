@@ -1,5 +1,5 @@
 use crate::common::{deleter, getter, poster, putter, test_data};
-use hvcg_biography_openapi_person::models::{PersonUpsert, PersonView};
+use hvcg_biography_openapi_person::models::{PersonUpsert, PersonView, PersonViewCollection};
 use lambda_http::http::StatusCode;
 use std::path::PathBuf;
 use std::sync::Once;
@@ -20,10 +20,18 @@ fn initialise() {
 #[tokio::test]
 async fn crud_should_work() {
     initialise();
+    test_get_collection().await;
     given_a_person_when_get_one_by_id_then_return_correct_person_view_openapi().await;
     update_a_person_by_id_and_person_view_returned().await;
     delete_a_person_when_given_one_person_id().await;
     when_post_a_person_upsert_then_person_is_correctly_saved_and_person_view_returned().await;
+}
+
+async fn test_get_collection() {
+    let actual_person_collection: Option<PersonViewCollection> =
+        getter::get_person_collection().await;
+
+    assert!(!actual_person_collection.unwrap().persons.is_empty());
 }
 
 async fn update_a_person_by_id_and_person_view_returned() {
@@ -82,8 +90,7 @@ async fn when_post_a_person_upsert_then_person_is_correctly_saved_and_person_vie
 
     // Then
     let actual_id: Option<Uuid> = actual_person_view_openapi.clone().map(|t| t.id);
-    let expected_person_view_openapi =
-        test_data::prepare_person_view_openapi(actual_id, None);
+    let expected_person_view_openapi = test_data::prepare_person_view_openapi(actual_id, None);
     assert_eq!(
         expected_person_view_openapi,
         actual_person_view_openapi.unwrap()

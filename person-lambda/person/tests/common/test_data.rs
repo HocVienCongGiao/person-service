@@ -1,6 +1,6 @@
 use chrono::NaiveDate;
 use hvcg_biography_openapi_person::models::{
-    IdNumberProvider, Nationality, PersonUpsert, PersonView, PersonalIdNumber,
+    IdNumberProvider, Nationality, PersonUpsert, PersonView, PersonViewCollection, PersonalIdNumber,
 };
 use std::str::FromStr;
 use uuid::Uuid;

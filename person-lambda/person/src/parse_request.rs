@@ -44,11 +44,11 @@ pub fn from_request_to_collection_query(req: &Request) -> PersonCollectionQuery 
     };
 
     PersonCollectionQuery {
-        name: from_query_param_to_string(&req, "name"),
-        email: from_query_param_to_string(&req, "email"),
-        phone: from_query_param_to_string(&req, "phone"),
+        name: from_query_param_to_string(req, "name"),
+        email: from_query_param_to_string(req, "email"),
+        phone: from_query_param_to_string(req, "phone"),
         date_of_birth,
-        place_of_birth: from_query_param_to_string(&req, "place_of_birth"),
+        place_of_birth: from_query_param_to_string(req, "place_of_birth"),
         offset: query.get("offset").map(|str| str.parse().unwrap()),
         count: query.get("count").map(|str| str.parse().unwrap()),
     }

@@ -26,13 +26,12 @@ pub async fn execute(request: Request) -> Response<Body> {
 async fn post_request(value: PersonUpsert) -> Response<Body> {
     let lambda_person_request = value;
     let result = controller::create_person(lambda_person_request).await;
-    let mut status_code;
-    match result {
-        Ok(_) => status_code = 200,
-        Err(UsecaseError::UniqueConstraintViolationError(..)) => status_code = 503,
-        Err(UsecaseError::InvalidInput) => status_code = 405,
-        _ => status_code = 500,
-    }
+    let status_code = match result {
+        Ok(_) => 200,
+        Err(UsecaseError::UniqueConstraintViolationError(..)) => 503,
+        Err(UsecaseError::InvalidInput) => 405,
+        _ => 500,
+    };
 
     let person_response = result.map(Some).unwrap_or_else(|e| {
         println!("error: {:?}", e);

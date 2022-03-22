@@ -1,4 +1,4 @@
-use crate::ports::person_dbresponse::Person as PersonDbResponse;
+use crate::ports::person::models::person_dbresponse::Person as PersonDbResponse;
 use async_trait::async_trait;
 use uuid::Uuid;
 

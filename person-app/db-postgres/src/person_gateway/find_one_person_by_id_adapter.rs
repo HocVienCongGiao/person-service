@@ -2,7 +2,7 @@ use crate::db_column;
 use crate::person_gateway::repository::PersonRepository;
 use async_trait::async_trait;
 use domain::ports::find_one_person_by_id_port::FindOnePersonByIdPort;
-use domain::ports::person_dbresponse::Person as PersonDbResponse;
+use domain::ports::person::models::person_dbresponse::Person as PersonDbResponse;
 use tokio_postgres::types::ToSql;
 use tokio_postgres::Row;
 use uuid::Uuid;

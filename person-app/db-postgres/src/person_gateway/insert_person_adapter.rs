@@ -5,8 +5,8 @@ use tokio_postgres::{Error, Transaction};
 use uuid::Uuid;
 
 use domain::ports::insert_person_port::InsertPersonPort;
-use domain::ports::person_dbresponse::Person as PersonDbResponse;
-use domain::ports::person_mutation_dbrequest::Person as PersonMutationDbRequest;
+use domain::ports::person::models::person_dbresponse::Person as PersonDbResponse;
+use domain::ports::person::models::person_mutation_dbrequest::Person as PersonMutationDbRequest;
 use domain::ports::personal_id_number::models::personal_id_number_db_response::PersonalIdNumberDbResponse;
 use domain::ports::DbError;
 

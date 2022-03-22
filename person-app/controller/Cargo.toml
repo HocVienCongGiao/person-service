@@ -10,6 +10,7 @@ hvcg_biography_openapi_person = { path = "../../person-openapi" }
 domain = { path = "../domain" }
 db-postgres = { path = "../db-postgres" }
 uuid = { version = "0.8", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
 
 
 [dev-dependencies]

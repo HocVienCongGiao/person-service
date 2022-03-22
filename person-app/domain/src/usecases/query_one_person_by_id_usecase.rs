@@ -1,12 +1,11 @@
 use async_trait::async_trait;
+use chrono::NaiveDate;
 use uuid::Uuid;
 
+use crate::ports::person::models::person_dbresponse::Person as PersonDbResponse;
 use crate::ports::person_db_gateway::PersonDbGateway;
-use crate::ports::person_dbresponse::Person as PersonDbResponse;
 use crate::ports::personal_id_number::personal_id_number_db_gateway::PersonalIdNumberGateway;
-use crate::usecases::query_one_personal_id_number_usecase::{
-    PersonalIdNumberUsecaseOutput, QueryPersonUsecaseOutput,
-};
+use crate::usecases::query_one_personal_id_number_usecase::PersonalIdNumberUsecaseOutput;
 use crate::usecases::ToUsecaseOutput;
 
 pub struct QueryOnePersonByIdUsecaseInteractor<A: PersonDbGateway, B: PersonalIdNumberGateway> {
@@ -41,7 +40,6 @@ where
 
             let mut personal_id_numbers_output: Vec<PersonalIdNumberUsecaseOutput> = Vec::new();
             for personal_id_number in personal_id_numbers {
-                println!("test {:?}", personal_id_number.id_number);
                 personal_id_numbers_output.push(PersonalIdNumberUsecaseOutput {
                     id_number: personal_id_number.id_number,
                     code: personal_id_number.code,
@@ -85,4 +83,16 @@ impl ToUsecaseOutput<QueryPersonUsecaseOutput> for PersonDbResponse {
             personal_id_numbers: None,
         }
     }
+}
+
+pub struct QueryPersonUsecaseOutput {
+    pub id: Uuid,
+    pub first_name: Option<String>,
+    pub middle_name: Option<String>,
+    pub last_name: Option<String>,
+    pub date_of_birth: Option<NaiveDate>,
+    pub place_of_birth: Option<String>,
+    pub email: Option<String>,
+    pub phone: Option<String>,
+    pub personal_id_numbers: Option<Vec<PersonalIdNumberUsecaseOutput>>,
 }

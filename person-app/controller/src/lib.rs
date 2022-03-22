@@ -1,17 +1,23 @@
+use crate::openapi::person_view::PersonCollectionQuery;
 use domain::usecases::UsecaseError;
 use hvcg_biography_openapi_person::models::{
-    PersonUpsert as PersonUpsertOpenApi, PersonView as PersonViewOpenApi,
+    PersonUpsert as PersonUpsertOpenApi, PersonView as PersonViewOpenApi, PersonViewCollection,
 };
 use uuid::Uuid;
 
 mod create_person;
 mod delete_one_person_by_id;
 mod get_one_person_by_id;
+mod get_person_collection;
 pub mod openapi;
 mod update_person_by_id;
 
 pub async fn get_one_person_by_id(id: Uuid) -> Option<PersonViewOpenApi> {
     get_one_person_by_id::from_uuid(id).await
+}
+
+pub async fn get_person_collection(query: PersonCollectionQuery) -> PersonViewCollection {
+    get_person_collection::from_usecase_input(query.to_usecase_input()).await
 }
 
 pub async fn delete_one_person_by_id(id: Uuid) -> Result<(), UsecaseError> {

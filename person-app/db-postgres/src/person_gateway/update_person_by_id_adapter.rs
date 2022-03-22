@@ -1,9 +1,9 @@
 use crate::person_gateway::repository::PersonRepository;
 use async_trait::async_trait;
 use chrono::NaiveDate;
+use domain::ports::person::models::person_dbresponse::Person as PersonDbResponse;
+use domain::ports::person::models::person_mutation_dbrequest::Person as PersonMutationDbRequest;
 use domain::ports::person::update_person_by_id_port::UpdateOnePersonByIdPort;
-use domain::ports::person_dbresponse::Person as PersonDbResponse;
-use domain::ports::person_mutation_dbrequest::Person as PersonMutationDbRequest;
 use domain::ports::personal_id_number::models::personal_id_number_db_response::PersonalIdNumberDbResponse;
 use domain::ports::DbError;
 use tokio_postgres::types::ToSql;

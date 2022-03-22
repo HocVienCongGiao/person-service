@@ -3,6 +3,7 @@ pub mod delete_person_usecase;
 pub mod person_usecase_shared_models;
 pub mod query_one_person_by_id_usecase;
 pub mod query_one_personal_id_number_usecase;
+pub mod query_person_collection_usecase;
 pub mod update_one_person_by_id_usecase;
 
 pub(crate) trait ToEntity<T> {

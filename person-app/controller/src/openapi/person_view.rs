@@ -1,13 +1,34 @@
 use crate::openapi::ToOpenApi;
+use chrono::NaiveDate;
 use domain::usecases::create_person_usecase::CreatePersonUsecaseOutput;
 use domain::usecases::person_usecase_shared_models::{
     PersonUsecaseSharedIdNumber, PersonUsecaseSharedIdNumberProvider,
 };
+use domain::usecases::query_one_person_by_id_usecase::QueryPersonUsecaseOutput;
 use domain::usecases::query_one_personal_id_number_usecase::PersonalIdNumberUsecaseOutput;
-use domain::usecases::query_one_personal_id_number_usecase::QueryPersonUsecaseOutput;
+use domain::usecases::query_person_collection_usecase::QueryPersonCollectionUsecaseOutput;
 use domain::usecases::update_one_person_by_id_usecase::UpdatePersonUsecaseOutput;
-use hvcg_biography_openapi_person::models::{IdNumberProvider, PersonView, PersonalIdNumber};
+use hvcg_biography_openapi_person::models::{
+    IdNumberProvider, PersonView, PersonViewCollection, PersonalIdNumber,
+};
 use std::str::FromStr;
+
+impl ToOpenApi<PersonViewCollection> for QueryPersonCollectionUsecaseOutput {
+    fn to_openapi(self) -> PersonViewCollection {
+        let persons = self.collection;
+        let person_views = persons
+            .into_iter()
+            .map(|person_usecase_output| person_usecase_output.to_openapi())
+            .collect::<Vec<PersonView>>()
+            .to_vec();
+
+        PersonViewCollection {
+            persons: person_views,
+            has_more: self.has_more,
+            total: Some(self.total),
+        }
+    }
+}
 
 impl ToOpenApi<IdNumberProvider> for PersonUsecaseSharedIdNumberProvider {
     fn to_openapi(self) -> IdNumberProvider {
@@ -115,4 +136,15 @@ impl ToOpenApi<PersonView> for UpdatePersonUsecaseOutput {
             personal_id_numbers: Some(personal_id_numbers),
         }
     }
+}
+
+pub struct PersonCollectionQuery {
+    pub name: Option<String>,
+    pub email: Option<String>,
+    pub phone: Option<String>,
+    pub date_of_birth: Option<NaiveDate>,
+    pub place_of_birth: Option<String>,
+    // pub sorts: Option<Vec<PersonSortCriteria>>,
+    pub offset: Option<i64>,
+    pub count: Option<i64>,
 }

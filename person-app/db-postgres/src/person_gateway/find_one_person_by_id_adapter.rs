@@ -2,7 +2,7 @@ use crate::db_column;
 use crate::person_gateway::repository::PersonRepository;
 use async_trait::async_trait;
 use domain::ports::find_one_person_by_id_port::FindOnePersonByIdPort;
-use domain::ports::person_dbresponse::Person as PersonDbResponse;
+use domain::ports::person::models::person_dbresponse::Person as PersonDbResponse;
 use tokio_postgres::types::ToSql;
 use tokio_postgres::Row;
 use uuid::Uuid;
@@ -32,13 +32,13 @@ impl FindOnePersonByIdPort for PersonRepository {
 pub(crate) fn from_pg_row_to_person_db_response(row: Row) -> PersonDbResponse {
     PersonDbResponse {
         id: db_column::get_uuid(&row, "id"),
-        first_name: Some(db_column::get_string(&row, "first_name")),
-        middle_name: Some(db_column::get_string(&row, "middle_name")),
-        last_name: Some(db_column::get_string(&row, "last_name")),
+        first_name: db_column::get_result_of_string(&row, "first_name"),
+        middle_name: db_column::get_result_of_string(&row, "middle_name"),
+        last_name: db_column::get_result_of_string(&row, "last_name"),
         date_of_birth: Some(db_column::get_date(&row, "date_of_birth")),
-        place_of_birth: Some(db_column::get_string(&row, "place_of_birth")),
-        email: Some(db_column::get_string(&row, "email")),
-        phone: Some(db_column::get_string(&row, "phone")),
+        place_of_birth: db_column::get_result_of_string(&row, "place_of_birth"),
+        email: db_column::get_result_of_string(&row, "email"),
+        phone: db_column::get_result_of_string(&row, "phone"),
         personal_id_numbers: None,
     }
 }

@@ -30,7 +30,7 @@ pub async fn execute(request: Request) -> Response<Body> {
 async fn put_request(person_id: Uuid, value: PersonUpsert) -> Response<Body> {
     let lambda_person_request = value;
     let result = controller::update_person_by_id(person_id, lambda_person_request).await;
-    let status_code= match result {
+    let status_code = match result {
         Ok(_) => 200,
         Err(UsecaseError::UniqueConstraintViolationError(..)) => 503,
         Err(UsecaseError::InvalidInput) => 405,

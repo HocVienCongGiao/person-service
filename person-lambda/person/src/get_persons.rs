@@ -1,5 +1,5 @@
 use crate::build_response;
-use crate::parse_request::from_request_to_id;
+use crate::parse_request::{from_request_to_collection_query, from_request_to_id};
 use lambda_http::http::header::{
     ACCESS_CONTROL_ALLOW_HEADERS, ACCESS_CONTROL_ALLOW_METHODS, ACCESS_CONTROL_ALLOW_ORIGIN,
     CONTENT_TYPE,
@@ -25,5 +25,7 @@ async fn get_person_by_id(id: Uuid) -> Response<Body> {
 }
 
 async fn get_persons(request: Request) -> Response<Body> {
-    build_response::execute(200, None, None)
+    let query = from_request_to_collection_query(&request);
+    let person_response = Some(controller::get_person_collection(query).await);
+    build_response::execute(200, None, person_response)
 }

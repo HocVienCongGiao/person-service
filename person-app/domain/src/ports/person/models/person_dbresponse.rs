@@ -13,3 +13,9 @@ pub struct Person {
     pub email: Option<String>,
     pub phone: Option<String>,
 }
+
+pub struct PersonCollection {
+    pub collection: Vec<Person>,
+    pub has_more: Option<bool>,
+    pub total: i64,
+}

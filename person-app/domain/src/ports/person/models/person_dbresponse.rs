@@ -1,3 +1,6 @@
+use crate::entities::educational_stage::EducationalStage;
+use crate::entities::language::Language;
+use crate::entities::title::Position;
 use crate::ports::personal_id_number::models::personal_id_number_db_response::PersonalIdNumberDbResponse;
 use chrono::NaiveDate;
 use uuid::Uuid;
@@ -12,6 +15,9 @@ pub struct Person {
     pub place_of_birth: Option<String>,
     pub email: Option<String>,
     pub phone: Option<String>,
+    pub languages: Vec<Language>,
+    pub educational_stages: Vec<EducationalStage>,
+    pub position: Option<Position>,
 }
 
 pub struct PersonCollection {

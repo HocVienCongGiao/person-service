@@ -17,7 +17,7 @@ where
 }
 
 #[async_trait]
-pub trait CreatePersonUsecase {
+pub trait DeletePersonUsecase {
     async fn execute(&mut self, id: Uuid) -> Result<(), UsecaseError>;
 }
 

@@ -3,9 +3,9 @@ use crate::openapi::ToUsecaseInput;
 use crate::{PersonUpsertOpenApi, PersonViewOpenApi};
 use db_postgres::person_gateway::repository::PersonRepository;
 use db_postgres::personal_id_number_gateway::repository::PersonalIdNumberRepository;
-use domain::usecases::person_usecase_shared_models::{
+use domain::usecases::person_usecase_shared_models::nationality::PersonUsecaseSharedNationality;
+use domain::usecases::person_usecase_shared_models::personal_id_number::{
     PersonUsecaseSharedIdNumber, PersonUsecaseSharedIdNumberProvider,
-    PersonUsecaseSharedNationality,
 };
 use domain::usecases::update_one_person_by_id_usecase::{
     UpdatePersonUsecase, UpdatePersonUsecaseInput, UpdatePersonUsecaseInteractor,
@@ -13,6 +13,7 @@ use domain::usecases::update_one_person_by_id_usecase::{
 use domain::usecases::UsecaseError;
 use hvcg_biography_openapi_person::models::{IdNumberProvider, Nationality};
 use uuid::Uuid;
+
 pub async fn from_openapi(
     person_id: Uuid,
     person: PersonUpsertOpenApi,
@@ -45,8 +46,7 @@ impl ToUsecaseInput<UpdatePersonUsecaseInput> for PersonUpsertOpenApi {
                 Nationality::VIETNAMESE => PersonUsecaseSharedNationality::Vietnamese,
                 Nationality::CHINESE => PersonUsecaseSharedNationality::Chinese,
                 Nationality::AMERICAN => PersonUsecaseSharedNationality::American,
-                // TODO: FRECH -> FRENCH
-                Nationality::FRECH => PersonUsecaseSharedNationality::French,
+                Nationality::FRENCH => PersonUsecaseSharedNationality::French,
                 Nationality::BRITISH => PersonUsecaseSharedNationality::British,
             })
         }

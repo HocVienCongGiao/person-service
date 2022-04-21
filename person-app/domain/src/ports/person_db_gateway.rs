@@ -1,8 +1,8 @@
 use crate::entities::person::Person;
 use crate::ports::find_one_person_by_id_port::FindOnePersonByIdPort;
-use crate::ports::insert_person_port::InsertPersonPort;
 use crate::ports::person::delete_one_person_by_id_port::DeleteOnePersonByIdPort;
 use crate::ports::person::find_person_collection_port::FindPersonCollectionPort;
+use crate::ports::person::insert_person_port::InsertPersonPort;
 use crate::ports::person::models::person_dbrequest::PersonQuery as PersonQueryDbRequest;
 use crate::ports::person::models::person_mutation_dbrequest::Person as PersonMutationDbRequest;
 use crate::ports::person::update_person_by_id_port::UpdateOnePersonByIdPort;
@@ -49,8 +49,12 @@ impl Person {
                 .clone()
                 .map(|nationality| nationality.to_string()),
             race: self.race.clone(),
-            personal_id_number: Some(personal_id_numbers),
+            personal_id_numbers: Some(personal_id_numbers),
             address: self.address.clone(),
+            saint_ids: self.saint_ids.clone(),
+            languages: self.languages.clone(),
+            educational_stages: self.educational_stages.clone(),
+            position: self.position.clone(),
         }
     }
 }

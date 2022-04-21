@@ -1,7 +1,7 @@
 use crate::openapi::ToOpenApi;
 use chrono::NaiveDate;
 use domain::usecases::create_person_usecase::CreatePersonUsecaseOutput;
-use domain::usecases::person_usecase_shared_models::{
+use domain::usecases::person_usecase_shared_models::personal_id_number::{
     PersonUsecaseSharedIdNumber, PersonUsecaseSharedIdNumberProvider,
 };
 use domain::usecases::query_one_person_by_id_usecase::QueryPersonUsecaseOutput;

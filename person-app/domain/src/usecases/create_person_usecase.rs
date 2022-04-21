@@ -1,12 +1,13 @@
+use crate::entities::language::Language as LanguageEntity;
 use crate::entities::person::{Nationality, Person as PersonEntity};
-use crate::entities::personal_id_number::{PersonIdNumberProvider, PersonalIdNumber};
 use crate::ports::person::models::person_dbresponse::Person as PersonDbResponse;
 use crate::ports::person_db_gateway::PersonDbGateway;
 use crate::ports::personal_id_number::models::personal_id_number_db_response::PersonalIdNumberDbResponse;
-use crate::usecases::person_usecase_shared_models::{
-    PersonUsecaseSharedIdNumber, PersonUsecaseSharedIdNumberProvider,
-    PersonUsecaseSharedNationality,
-};
+use crate::usecases::person_usecase_shared_models::educational_stage::PersonUsecaseSharedEducationalStage;
+use crate::usecases::person_usecase_shared_models::language::PersonUsecaseSharedLanguage;
+use crate::usecases::person_usecase_shared_models::nationality::PersonUsecaseSharedNationality;
+use crate::usecases::person_usecase_shared_models::personal_id_number::PersonUsecaseSharedIdNumber;
+use crate::usecases::person_usecase_shared_models::title::PersonUsecaseSharedPosition;
 use crate::usecases::{ToEntity, ToUsecaseOutput, UsecaseError};
 use async_trait::async_trait;
 use chrono::NaiveDate;
@@ -75,6 +76,7 @@ pub struct CreatePersonUsecaseInput {
     pub first_name: Option<String>,
     pub middle_name: Option<String>,
     pub last_name: Option<String>,
+    pub saint_ids: Option<Vec<Uuid>>,
     pub date_of_birth: Option<NaiveDate>,
     pub place_of_birth: Option<String>,
     pub email: Option<String>,
@@ -82,7 +84,10 @@ pub struct CreatePersonUsecaseInput {
     pub address: Option<String>,
     pub nationality: Option<PersonUsecaseSharedNationality>,
     pub race: Option<String>,
-    pub personal_id_number: Option<Vec<PersonUsecaseSharedIdNumber>>,
+    pub personal_id_numbers: Option<Vec<PersonUsecaseSharedIdNumber>>,
+    pub languages: Option<Vec<PersonUsecaseSharedLanguage>>,
+    pub educational_stages: Option<Vec<PersonUsecaseSharedEducationalStage>>,
+    pub position: Option<PersonUsecaseSharedPosition>,
 }
 
 #[derive(Clone)]
@@ -132,44 +137,23 @@ impl ToUsecaseOutput<CreatePersonUsecaseOutput> for PersonDbResponse {
     }
 }
 
-impl ToEntity<PersonIdNumberProvider> for PersonUsecaseSharedIdNumberProvider {
-    fn to_entity(self) -> PersonIdNumberProvider {
-        match self {
-            PersonUsecaseSharedIdNumberProvider::NationalId => PersonIdNumberProvider::NationalId,
-            PersonUsecaseSharedIdNumberProvider::Passport => PersonIdNumberProvider::Passport,
-        }
-    }
-}
-
-impl ToEntity<Nationality> for PersonUsecaseSharedNationality {
-    fn to_entity(self) -> Nationality {
-        match self {
-            PersonUsecaseSharedNationality::Vietnamese => Nationality::Vietnamese,
-            PersonUsecaseSharedNationality::Chinese => Nationality::Chinese,
-            PersonUsecaseSharedNationality::American => Nationality::American,
-            PersonUsecaseSharedNationality::French => Nationality::French,
-            PersonUsecaseSharedNationality::British => Nationality::British,
-        }
-    }
-}
-
 impl ToEntity<PersonEntity> for CreatePersonUsecaseInput {
     fn to_entity(self) -> PersonEntity {
         let mut personal_id_numbers = Vec::new();
-        for pin in self.personal_id_number.unwrap() {
-            personal_id_numbers.push(PersonalIdNumber {
-                id: Some(Uuid::new_v4()),
-                id_number: pin.id_number,
-                code: Some(pin.code.unwrap().to_entity()),
-                date_of_issue: pin.date_of_issue,
-                place_of_issue: pin.place_of_issue,
-            });
+        for pin in self.personal_id_numbers.unwrap() {
+            personal_id_numbers.push(pin.to_entity());
         }
 
         let mut nationality: Option<Nationality> = None;
         if let Some(nationality_usecase_input) = self.nationality {
             nationality = Some(nationality_usecase_input.to_entity())
         }
+
+        let mut languages: Option<Vec<LanguageEntity>> = None;
+        if let Some(langs) = self.languages {
+            languages = Some(langs.into_iter().map(|lang| lang.to_entity()).collect());
+        }
+
         PersonEntity {
             id: Some(Uuid::new_v4()),
             first_name: self.first_name,
@@ -182,7 +166,13 @@ impl ToEntity<PersonEntity> for CreatePersonUsecaseInput {
             nationality,
             race: self.race,
             address: self.address,
+            saint_ids: self.saint_ids,
             personal_id_numbers: Some(personal_id_numbers),
+            languages,
+            educational_stages: self
+                .educational_stages
+                .map(|stages| stages.into_iter().map(|stage| stage.to_entity()).collect()),
+            position: self.position.map(|p| p.to_entity()),
         }
     }
 }

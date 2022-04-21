@@ -1,7 +1,6 @@
 use crate::usecases::UsecaseError;
 
 pub mod find_one_person_by_id_port;
-pub mod insert_person_port;
 pub mod person;
 pub mod person_db_gateway;
 pub mod personal_id_number;

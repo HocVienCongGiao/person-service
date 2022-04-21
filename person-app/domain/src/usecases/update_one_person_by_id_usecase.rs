@@ -3,9 +3,8 @@ use crate::entities::personal_id_number::PersonalIdNumber;
 use crate::ports::person::models::person_dbresponse::Person as PersonDbResponse;
 use crate::ports::person_db_gateway::PersonDbGateway;
 use crate::ports::personal_id_number::personal_id_number_db_gateway::PersonalIdNumberGateway;
-use crate::usecases::person_usecase_shared_models::{
-    PersonUsecaseSharedIdNumber, PersonUsecaseSharedNationality,
-};
+use crate::usecases::person_usecase_shared_models::nationality::PersonUsecaseSharedNationality;
+use crate::usecases::person_usecase_shared_models::personal_id_number::PersonUsecaseSharedIdNumber;
 use crate::usecases::{ToEntity, ToUsecaseOutput, UsecaseError};
 use async_trait::async_trait;
 use chrono::NaiveDate;
@@ -148,6 +147,10 @@ impl ToEntity<PersonEntity> for UpdatePersonUsecaseInput {
             race: self.race,
             personal_id_numbers: Some(personal_id_numbers),
             address: self.address,
+            saint_ids: None,
+            languages: None,
+            educational_stages: None,
+            position: None,
         }
     }
 }

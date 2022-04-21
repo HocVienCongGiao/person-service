@@ -1,4 +1,7 @@
+use crate::entities::educational_stage::EducationalStage;
+use crate::entities::language::Language;
 use crate::entities::personal_id_number::PersonalIdNumber;
+use crate::entities::title::Position;
 use chrono::NaiveDate;
 use uuid::Uuid;
 
@@ -16,6 +19,10 @@ pub(crate) struct Person {
     pub race: Option<String>,
     pub personal_id_numbers: Option<Vec<PersonalIdNumber>>,
     pub address: Option<String>,
+    pub saint_ids: Option<Vec<Uuid>>,
+    pub languages: Option<Vec<Language>>,
+    pub educational_stages: Option<Vec<EducationalStage>>,
+    pub position: Option<Position>,
 }
 
 impl Person {

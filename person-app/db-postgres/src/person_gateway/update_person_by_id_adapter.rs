@@ -251,7 +251,7 @@ impl UpdateOnePersonByIdPort for PersonRepository {
         }
 
         let mut personal_id_numbers: Vec<PersonalIdNumberDbResponse> = Vec::new();
-        for person_id_number in db_request.personal_id_number.unwrap() {
+        for person_id_number in db_request.personal_id_numbers.unwrap() {
             // insert id for personal id number
             let id_number_id = person_id_number.id.unwrap();
             let id_number = person_id_number.id_number.unwrap();
@@ -327,6 +327,9 @@ impl UpdateOnePersonByIdPort for PersonRepository {
                 email: Some(email.clone()),
                 phone: Some(phone.clone()),
                 personal_id_numbers: Some(personal_id_numbers),
+                languages: vec![],
+                educational_stages: vec![],
+                position: None,
             })
             .map_err(|error| DbError::UnknownError(error.into_source().unwrap().to_string()))
     }

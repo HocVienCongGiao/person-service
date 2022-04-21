@@ -68,7 +68,7 @@ async fn delete_a_person_when_given_one_person_id() {
 async fn given_a_person_when_get_one_by_id_then_return_correct_person_view_openapi() {
     // Given
     let expected_person_view_openapi: PersonView =
-        test_data::prepare_person_view_openapi(None, None);
+        test_data::prepare_person_view_openapi(None, Some("837837655558".to_string()));
     let given_uuid = expected_person_view_openapi.id.to_string();
 
     // When

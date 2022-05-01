@@ -6,15 +6,16 @@ use tokio_postgres::{Error, Transaction};
 use uuid::Uuid;
 
 use domain::entities::language::Language as LanguageEntity;
+use domain::entities::person::Nationality;
 use domain::entities::title::Position;
 
+use crate::person_gateway::repository::PersonRepository;
 use domain::ports::person::insert_person_port::InsertPersonPort;
 use domain::ports::person::models::person_dbresponse::Person as PersonDbResponse;
 use domain::ports::person::models::person_mutation_dbrequest::Person as PersonMutationDbRequest;
 use domain::ports::personal_id_number::models::personal_id_number_db_response::PersonalIdNumberDbResponse;
 use domain::ports::DbError;
-
-use crate::person_gateway::repository::PersonRepository;
+use std::ops::Add;
 
 pub(crate) async fn save_id(
     transaction: &Transaction<'_>,
@@ -146,6 +147,29 @@ pub(crate) async fn save_language(
     let params: &[&(dyn ToSql + Sync)] = &[&personal_id, &language, &level];
     transaction.execute(&stmt, params).await
 }
+
+pub(crate) async fn save_christian_names(
+    transaction: &Transaction<'_>,
+    id: Uuid,
+    christian_names: Vec<Uuid>,
+) -> Result<u64, Error> {
+    // TODO: refactor this into 1 query
+    // TODO: result and then
+    let mut result: Result<u64, Error> = Ok(1_u64);
+    let mut ordering: i16 = 1;
+    // TODO: use enumerate instead
+    for christian_name in christian_names {
+        let params: &[&(dyn ToSql + Sync)] = &[&id, &christian_name, &ordering];
+        let stmt = (*transaction)
+            .prepare("INSERT into public.person__person_christian_names (person_id, saint_id, ordering) VAlUES ($1, $2, $3)")
+            .await
+            .unwrap();
+        result = transaction.execute(&stmt, params).await;
+        ordering = ordering.add(1);
+    }
+    result
+}
+
 #[async_trait]
 impl InsertPersonPort for PersonRepository {
     async fn insert(
@@ -271,9 +295,18 @@ impl InsertPersonPort for PersonRepository {
             &transaction,
             id,
             "nationality".to_string(),
-            nationality.clone(),
+            nationality.to_string().clone(),
         )
         .await;
+        if let Err(error) = result {
+            return Err(DbError::UnknownError(
+                error.into_source().unwrap().to_string(),
+            ));
+        }
+
+        // insert christian names
+        let christian_names = db_request.saint_ids.unwrap();
+        result = save_christian_names(&transaction, id, christian_names.clone()).await;
         if let Err(error) = result {
             return Err(DbError::UnknownError(
                 error.into_source().unwrap().to_string(),
@@ -518,10 +551,14 @@ impl InsertPersonPort for PersonRepository {
                 place_of_birth: Some(place_of_birth.clone()),
                 email: Some(email.clone()),
                 phone: Some(phone.clone()),
+                address: Some(address),
                 personal_id_numbers: Some(personal_id_numbers),
-                languages,
-                educational_stages,
+                languages: Some(languages),
+                educational_stages: Some(educational_stages),
                 position,
+                nationality: Some(nationality),
+                saint_ids: Some(christian_names),
+                race: Some(race),
             })
             .map_err(|error| DbError::UnknownError(error.into_source().unwrap().to_string()))
     }

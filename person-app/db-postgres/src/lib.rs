@@ -2,6 +2,7 @@ mod config;
 mod db_column;
 pub mod person_gateway;
 pub mod personal_id_number_gateway;
+pub mod saint_gateway;
 
 use tokio_postgres::{Client, NoTls};
 

@@ -17,6 +17,21 @@ pub fn prepare_person_view_openapi(
         date_of_issue: Some(NaiveDate::from_str("2011-05-05").unwrap()),
         place_of_issue: Some("TP.HCM".to_string()),
     }];
+    let languages = vec![Language {
+        name: Some("ENGLISH".to_string()),
+        level: Some(ForeignLanguageLevel::BEGINNER),
+    }];
+    let educational_stages = vec![EducationalStage {
+        educational_level: EducationalLevel::HIGH_SCHOOL,
+        school_name: "Nguyễn Du".to_string(),
+        major: None,
+        graduate_year: Some(2000_f64),
+    }];
+    let position = PersonUpsertPosition {
+        name: Title::PRIEST,
+        period: Some(VowProgress::SIMPLE_VOW),
+        polity_id: Some(Uuid::from_str("369769b1-96ee-4e11-95e9-a9ed1409c043").unwrap()),
+    };
     PersonView {
         id: person_uuid
             .unwrap_or_else(|| Uuid::from_str("53f549b9-99bf-4e12-88e3-c2f868953283").unwrap()),
@@ -25,7 +40,14 @@ pub fn prepare_person_view_openapi(
         place_of_birth: Some("Trà Vinh".to_string()),
         email: Some("binh@sunrise.vn".to_string()),
         phone: Some("+84 1228019700".to_string()),
+        address: Some("1000 CMT8 phường 3 quận Tân Bình, TP HCM".to_string()),
         personal_id_numbers: Some(personal_id_numbers_openapi),
+        christian_name: Some("Phêrô ".to_string()),
+        languages: Some(languages),
+        education_stages: Some(educational_stages),
+        position: Some(position),
+        nationality: Some(Nationality::VIETNAMESE),
+        race: Some("Kinh".to_string()),
     }
 }
 
@@ -49,7 +71,7 @@ pub fn prepare_person_upsert_openapi() -> PersonUpsert {
     let position = PersonUpsertPosition {
         name: Title::PRIEST,
         period: Some(VowProgress::SIMPLE_VOW),
-        parish: Some(Uuid::from_str("369769b1-96ee-4e11-95e9-a9ed1409c043").unwrap()),
+        polity_id: Some(Uuid::from_str("369769b1-96ee-4e11-95e9-a9ed1409c043").unwrap()),
     };
     PersonUpsert {
         first_name: Some("Chiến".to_string()),

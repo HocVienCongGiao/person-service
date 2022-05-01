@@ -44,10 +44,7 @@ impl Person {
             place_of_birth: self.place_of_birth.clone(),
             email: self.email.clone(),
             phone: self.phone.clone(),
-            nationality: self
-                .nationality
-                .clone()
-                .map(|nationality| nationality.to_string()),
+            nationality: self.nationality.clone(),
             race: self.race.clone(),
             personal_id_numbers: Some(personal_id_numbers),
             address: self.address.clone(),

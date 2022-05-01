@@ -113,7 +113,7 @@ pub(crate) async fn save_date_of_issue(
 ) -> Result<u64, Error> {
     let stmt = (*transaction)
         .prepare(
-            "INSERT INTO public.person__person_id_number_date_of_issue (id, date_of_issue) VAlUES ($1, $2)",
+            "UPDATE INTO public.person__person_id_number_date_of_issue (id, date_of_issue) VAlUES ($1, $2)",
         )
         .await
         .unwrap();
@@ -326,10 +326,14 @@ impl UpdateOnePersonByIdPort for PersonRepository {
                 place_of_birth: Some(place_of_birth.clone()),
                 email: Some(email.clone()),
                 phone: Some(phone.clone()),
+                address: None,
                 personal_id_numbers: Some(personal_id_numbers),
-                languages: vec![],
-                educational_stages: vec![],
+                languages: Some(vec![]),
+                educational_stages: Some(vec![]),
                 position: None,
+                nationality: None,
+                saint_ids: None,
+                race: None,
             })
             .map_err(|error| DbError::UnknownError(error.into_source().unwrap().to_string()))
     }

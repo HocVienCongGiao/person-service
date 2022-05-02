@@ -39,9 +39,13 @@ pub(crate) fn from_pg_row_to_person_db_response(row: Row) -> PersonDbResponse {
         place_of_birth: db_column::get_result_of_string(&row, "place_of_birth"),
         email: db_column::get_result_of_string(&row, "email"),
         phone: db_column::get_result_of_string(&row, "phone"),
+        address: db_column::get_result_of_string(&row, "address"),
+        saint_ids: None,
+        languages: None,
         personal_id_numbers: None,
-        languages: vec![],
-        educational_stages: vec![],
         position: None,
+        nationality: None,
+        educational_stages: None,
+        race: db_column::get_result_of_string(&row, "race"),
     }
 }

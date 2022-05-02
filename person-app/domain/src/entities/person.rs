@@ -33,7 +33,7 @@ impl Person {
 
 #[derive(PartialEq, Clone)]
 #[repr(C)]
-pub(crate) enum Nationality {
+pub enum Nationality {
     Vietnamese,
     Chinese,
     British,

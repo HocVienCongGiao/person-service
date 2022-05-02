@@ -44,7 +44,7 @@ impl ToUsecaseInput<PersonUsecaseSharedPosition> for PersonUpsertPosition {
         PersonUsecaseSharedPosition {
             title: Some(self.name.to_usecase_input()),
             period: self.period.map(|v| v.to_usecase_input()),
-            parish: self.parish,
+            parish: self.polity_id,
         }
     }
 }

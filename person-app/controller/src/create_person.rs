@@ -2,6 +2,7 @@ use crate::openapi::ToOpenApi;
 use crate::openapi::ToUsecaseInput;
 use crate::PersonViewOpenApi;
 use db_postgres::person_gateway::repository::PersonRepository;
+use db_postgres::saint_gateway::repository::SaintRepository;
 use domain::usecases::create_person_usecase::CreatePersonUsecase;
 use domain::usecases::create_person_usecase::{
     CreatePersonUsecaseInput, CreatePersonUsecaseInteractor,
@@ -14,8 +15,13 @@ pub async fn from_openapi(person: PersonUpsertOpenApi) -> Result<PersonViewOpenA
     let client = db_postgres::connect().await;
     let person_repository = PersonRepository { client };
 
+    let saint_client = db_postgres::connect().await;
+    let saint_repository = SaintRepository {
+        client: saint_client,
+    };
+
     // Inject dependencies to Interactor and invoke func
-    let result = CreatePersonUsecaseInteractor::new(person_repository)
+    let result = CreatePersonUsecaseInteractor::new(person_repository, saint_repository)
         .execute(person.to_usecase_input())
         .await;
     result.map(|res| res.to_openapi())

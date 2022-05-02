@@ -50,7 +50,7 @@ where
             usecase_output.personal_id_numbers = Some(personal_id_numbers_output);
             Some(usecase_output)
         } else {
-            println!("Execution fail");
+            println!("ID not found");
             None
         };
     }

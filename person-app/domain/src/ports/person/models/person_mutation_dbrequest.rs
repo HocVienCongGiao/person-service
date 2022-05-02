@@ -1,5 +1,6 @@
 use crate::entities::educational_stage::EducationalStage;
 use crate::entities::language::Language;
+use crate::entities::person::Nationality;
 use crate::entities::title::Position;
 use crate::ports::personal_id_number::models::personal_id_number_db_request::PersonalIdNumber as PersonalIdNumberDbRequest;
 use chrono::NaiveDate;
@@ -14,7 +15,7 @@ pub struct Person {
     pub place_of_birth: Option<String>,
     pub email: Option<String>,
     pub phone: Option<String>,
-    pub nationality: Option<String>,
+    pub nationality: Option<Nationality>,
     pub race: Option<String>,
     pub personal_id_numbers: Option<Vec<PersonalIdNumberDbRequest>>,
     pub address: Option<String>,

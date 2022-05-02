@@ -14,6 +14,10 @@ pub fn get_string(row: &Row, col: &str) -> String {
     row.get::<&str, String>(col)
 }
 
+pub fn get_boolean(row: &Row, col: &str) -> bool {
+    row.get::<&str, bool>(col)
+}
+
 pub fn get_result_of_string(row: &Row, col: &str) -> Option<String> {
     match row.try_get::<&str, String>(col) {
         Ok(string) => Some(string),

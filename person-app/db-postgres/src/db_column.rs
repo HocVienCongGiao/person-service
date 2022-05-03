@@ -25,13 +25,6 @@ pub fn get_result_of_string(row: &Row, col: &str) -> Option<String> {
     }
 }
 
-pub fn get_result_of_int(row: &Row, col: &str) -> Option<i32> {
-    match row.try_get::<&str, i32>(col) {
-        Ok(value) => Some(value),
-        _ => None,
-    }
-}
-
 pub fn get_date(row: &Row, col: &str) -> NaiveDate {
     row.get::<&str, NaiveDate>(col)
 }

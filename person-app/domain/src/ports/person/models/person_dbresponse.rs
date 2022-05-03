@@ -18,7 +18,6 @@ pub struct Person {
     pub phone: Option<String>,
     pub address: Option<String>,
     pub saint_ids: Option<Vec<Uuid>>,
-    pub christian_name: Option<String>,
     pub languages: Option<Vec<Language>>,
     pub educational_stages: Option<Vec<EducationalStage>>,
     pub position: Option<Position>,

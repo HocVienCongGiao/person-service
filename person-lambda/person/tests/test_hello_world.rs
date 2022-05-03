@@ -21,7 +21,7 @@ fn initialise() {
 async fn crud_should_work() {
     initialise();
     // test_get_collection().await;
-    given_a_person_when_get_one_by_id_then_return_correct_person_view_openapi().await;
+    // given_a_person_when_get_one_by_id_then_return_correct_person_view_openapi().await;
     // update_a_person_by_id_and_person_view_returned().await;
     // delete_a_person_when_given_one_person_id().await;
     when_post_a_person_upsert_then_person_is_correctly_saved_and_person_view_returned().await;

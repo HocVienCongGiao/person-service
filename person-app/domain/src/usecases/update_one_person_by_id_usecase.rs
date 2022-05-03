@@ -9,7 +9,6 @@ use crate::usecases::person_usecase_shared_models::language::PersonUsecaseShared
 use crate::usecases::person_usecase_shared_models::nationality::PersonUsecaseSharedNationality;
 use crate::usecases::person_usecase_shared_models::personal_id_number::PersonUsecaseSharedIdNumber;
 use crate::usecases::person_usecase_shared_models::title::PersonUsecaseSharedPosition;
-use crate::usecases::query_one_personal_id_number_usecase::PersonalIdNumberUsecaseOutput;
 use crate::usecases::{ToEntity, ToUsecaseOutput, UsecaseError};
 use async_trait::async_trait;
 use chrono::NaiveDate;
@@ -108,6 +107,7 @@ pub struct UpdatePersonUsecaseInput {
     pub position: Option<PersonUsecaseSharedPosition>,
 }
 
+#[derive(Clone)]
 pub struct UpdatePersonUsecaseOutput {
     pub person_id: Option<Uuid>,
     pub first_name: Option<String>,
@@ -120,7 +120,7 @@ pub struct UpdatePersonUsecaseOutput {
     pub address: Option<String>,
     pub nationality: Option<PersonUsecaseSharedNationality>,
     pub race: Option<String>,
-    pub personal_id_numbers: Option<Vec<PersonalIdNumberUsecaseOutput>>,
+    pub personal_id_numbers: Option<Vec<PersonUsecaseSharedIdNumber>>,
 }
 
 impl ToEntity<PersonEntity> for UpdatePersonUsecaseInput {
@@ -168,7 +168,7 @@ impl ToEntity<PersonEntity> for UpdatePersonUsecaseInput {
 
 impl ToUsecaseOutput<UpdatePersonUsecaseOutput> for PersonDbResponse {
     fn to_usecase_output(self) -> UpdatePersonUsecaseOutput {
-        let mut personal_id_numbers = Vec::new();
+        let mut personal_id_numbers: Vec<PersonUsecaseSharedIdNumber> = Vec::new();
         if let Some(personal_id_numbers_db_response) = self.personal_id_numbers {
             for personal_id_number in personal_id_numbers_db_response {
                 personal_id_numbers.push(personal_id_number.to_usecase_output());

@@ -2,6 +2,8 @@ use crate::entities::educational_stage::EducationalStage;
 use crate::entities::language::Language;
 use crate::entities::personal_id_number::PersonalIdNumber;
 use crate::entities::title::Position;
+use crate::usecases::person_usecase_shared_models::nationality::PersonUsecaseSharedNationality;
+use crate::usecases::ToUsecaseOutput;
 use chrono::NaiveDate;
 use uuid::Uuid;
 
@@ -64,6 +66,18 @@ impl std::str::FromStr for Nationality {
             "AMERICAN" => std::result::Result::Ok(Nationality::American),
             "FRENCH" => std::result::Result::Ok(Nationality::French),
             _ => std::result::Result::Err(format!("Value not valid: {}", s)),
+        }
+    }
+}
+
+impl ToUsecaseOutput<PersonUsecaseSharedNationality> for Nationality {
+    fn to_usecase_output(self) -> PersonUsecaseSharedNationality {
+        match self {
+            Nationality::Vietnamese => PersonUsecaseSharedNationality::Vietnamese,
+            Nationality::Chinese => PersonUsecaseSharedNationality::Chinese,
+            Nationality::American => PersonUsecaseSharedNationality::American,
+            Nationality::French => PersonUsecaseSharedNationality::French,
+            Nationality::British => PersonUsecaseSharedNationality::British,
         }
     }
 }

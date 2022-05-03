@@ -226,6 +226,21 @@ impl ToOpenApi<PersonView> for QueryPersonUsecaseOutput {
                 personal_id_numbers.push(personal_id_number.to_openapi())
             }
         }
+
+        let education_stages = match self.educational_stages {
+            Some(stages) => Some(stages.into_iter().map(|stage| stage.to_openapi()).collect()),
+            _ => None,
+        };
+
+        let languages = match self.languages {
+            Some(languages) => Some(
+                languages
+                    .into_iter()
+                    .map(|language| language.to_openapi())
+                    .collect::<Vec<Language>>(),
+            ),
+            _ => None,
+        };
         PersonView {
             id: self.id,
             date_of_birth: self.date_of_birth,
@@ -239,13 +254,13 @@ impl ToOpenApi<PersonView> for QueryPersonUsecaseOutput {
                 self.first_name.unwrap(),
             )),
             personal_id_numbers: Some(personal_id_numbers),
-            christian_name: None,
-            languages: None,
-            education_stages: None,
-            position: None,
-            nationality: None,
-            race: None,
-            address: None,
+            christian_name: self.christian_name,
+            languages,
+            education_stages,
+            position: self.position.map(|p| p.to_openapi()),
+            nationality: self.nationality.map(|n| n.to_openapi()),
+            race: self.race,
+            address: self.address,
         }
     }
 }

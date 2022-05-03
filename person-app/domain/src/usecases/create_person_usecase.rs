@@ -22,6 +22,7 @@ use crate::usecases::person_usecase_shared_models::title::{
     PersonUsecaseSharedPosition, PersonUsecaseSharedTitle,
 };
 use crate::usecases::person_usecase_shared_models::vow_progress::PersonUsecaseSharedVowProgress;
+use crate::usecases::query_one_personal_id_number_usecase::PersonalIdNumberUsecaseOutput;
 use crate::usecases::{ToEntity, ToUsecaseOutput, UsecaseError};
 use async_trait::async_trait;
 use chrono::NaiveDate;
@@ -99,7 +100,7 @@ where
         return match usecase_output {
             Ok(mut output) => {
                 println!("Create successfully");
-                output.christian_name = Some(christian_name);
+                output.christian_name = Some(christian_name.trim().to_string());
                 Ok(output)
             }
             Err(error) => {
@@ -139,7 +140,7 @@ pub struct CreatePersonUsecaseOutput {
     pub place_of_birth: Option<String>,
     pub email: Option<String>,
     pub phone: Option<String>,
-    pub personal_id_numbers: Option<Vec<PersonUsecaseSharedIdNumber>>,
+    pub personal_id_numbers: Option<Vec<PersonalIdNumberUsecaseOutput>>,
     pub nationality: Option<PersonUsecaseSharedNationality>,
     pub race: Option<String>,
     pub languages: Option<Vec<PersonUsecaseSharedLanguage>>,
@@ -147,9 +148,9 @@ pub struct CreatePersonUsecaseOutput {
     pub position: Option<PersonUsecaseSharedPosition>,
 }
 
-impl ToUsecaseOutput<PersonUsecaseSharedIdNumber> for PersonalIdNumberDbResponse {
-    fn to_usecase_output(self) -> PersonUsecaseSharedIdNumber {
-        PersonUsecaseSharedIdNumber {
+impl ToUsecaseOutput<PersonalIdNumberUsecaseOutput> for PersonalIdNumberDbResponse {
+    fn to_usecase_output(self) -> PersonalIdNumberUsecaseOutput {
+        PersonalIdNumberUsecaseOutput {
             id_number: self.id_number,
             code: self.code.map(|code| code.parse().unwrap()),
             date_of_issue: self.date_of_issue,
@@ -237,21 +238,9 @@ impl ToUsecaseOutput<PersonUsecaseSharedEducationalStage> for EducationalStageEn
     }
 }
 
-impl ToUsecaseOutput<PersonUsecaseSharedNationality> for NationalityEntity {
-    fn to_usecase_output(self) -> PersonUsecaseSharedNationality {
-        match self {
-            NationalityEntity::American => PersonUsecaseSharedNationality::American,
-            NationalityEntity::British => PersonUsecaseSharedNationality::British,
-            NationalityEntity::Chinese => PersonUsecaseSharedNationality::Chinese,
-            NationalityEntity::French => PersonUsecaseSharedNationality::French,
-            NationalityEntity::Vietnamese => PersonUsecaseSharedNationality::Vietnamese,
-        }
-    }
-}
-
 impl ToUsecaseOutput<CreatePersonUsecaseOutput> for PersonDbResponse {
     fn to_usecase_output(self) -> CreatePersonUsecaseOutput {
-        let mut personal_id_numbers: Vec<PersonUsecaseSharedIdNumber> = Vec::new();
+        let mut personal_id_numbers: Vec<PersonalIdNumberUsecaseOutput> = Vec::new();
         if let Some(personal_id_numbers_db_response) = self.personal_id_numbers {
             for personal_id_number in personal_id_numbers_db_response {
                 personal_id_numbers.push(personal_id_number.to_usecase_output());

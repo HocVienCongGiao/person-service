@@ -334,7 +334,6 @@ impl UpdateOnePersonByIdPort for PersonRepository {
                 nationality: None,
                 saint_ids: None,
                 race: None,
-                christian_name: None,
             })
             .map_err(|error| DbError::UnknownError(error.into_source().unwrap().to_string()))
     }

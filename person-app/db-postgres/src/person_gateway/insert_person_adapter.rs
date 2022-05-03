@@ -559,7 +559,6 @@ impl InsertPersonPort for PersonRepository {
                 nationality: Some(nationality),
                 saint_ids: Some(christian_names),
                 race: Some(race),
-                christian_name: None,
             })
             .map_err(|error| DbError::UnknownError(error.into_source().unwrap().to_string()))
     }

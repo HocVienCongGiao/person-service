@@ -18,12 +18,12 @@ pub fn prepare_person_view_openapi(
         place_of_issue: Some("TP.HCM".to_string()),
     }];
     let languages = vec![Language {
-        name: Some("English".to_string()),
+        name: Some("ENGLISH".to_string()),
         level: Some(ForeignLanguageLevel::BEGINNER),
     }];
     let educational_stages = vec![EducationalStage {
         educational_level: EducationalLevel::HIGH_SCHOOL,
-        school_name: "THPT Nguyễn Du".to_string(),
+        school_name: "Nguyễn Du".to_string(),
         major: None,
         graduate_year: Some(2000_f64),
     }];
@@ -42,7 +42,7 @@ pub fn prepare_person_view_openapi(
         phone: Some("+84 1228019700".to_string()),
         address: Some("1000 CMT8 phường 3 quận Tân Bình, TP HCM".to_string()),
         personal_id_numbers: Some(personal_id_numbers_openapi),
-        christian_name: Some("Phêrô".to_string()),
+        christian_name: Some("Phêrô ".to_string()),
         languages: Some(languages),
         education_stages: Some(educational_stages),
         position: Some(position),
@@ -59,12 +59,12 @@ pub fn prepare_person_upsert_openapi() -> PersonUpsert {
         place_of_issue: Some("TP.HCM".to_string()),
     }];
     let languages = vec![Language {
-        name: Some("English".to_string()),
+        name: Some("ENGLISH".to_string()),
         level: Some(ForeignLanguageLevel::BEGINNER),
     }];
     let educational_stages = vec![EducationalStage {
         educational_level: EducationalLevel::HIGH_SCHOOL,
-        school_name: "THPT Nguyễn Du".to_string(),
+        school_name: "Nguyễn Du".to_string(),
         major: None,
         graduate_year: Some(2000_f64),
     }];
